@@ -1,0 +1,185 @@
+<div class="container-fluid py-3" style="background-color: f2f2f2;">
+
+  <!-- Top Title Row -->
+
+
+  <div class="row g-4 scroll-container">
+
+    <!-- LEFT SIDE BOX -->
+    <div class="col-md-7 card shadow-sm border-0 rounded-4">
+      <div class="d-flex align-items-center card-bod my-2 mb-3 mx-0">
+        <i class="bi bi-chevron-left fs-4 me-2" (click)="back()"></i>
+        <h5 class="fw-bold m-0">{{Id}}</h5>
+
+        <span class="badge ms-3 bg-warning-subtle text-warning fw-semibold">
+          ● Pending Purchase Approval
+        </span>
+      </div>
+      <div class=" shadow-s border-0 rounded-4">
+        <div class="card-bod">
+
+          <h6 class="fw-bold mb-3">Indent Details</h6>
+
+          <form [formGroup]="indentForm">
+
+            <!-- First Row -->
+            <div class="row mb-3">
+              <div class="col-4">
+                <label class="text-muted small">Division</label>
+
+                <div *ngIf="!isEdit" class="fw-semibold">
+                  {{ indentForm.value.division }}
+                </div>
+                <input *ngIf="isEdit" class="form-control" formControlName="division">
+              </div>
+
+              <div class="col-4">
+                <label class="text-muted small">Material Type</label>
+                <div *ngIf="!isEdit" class="fw-semibold">
+                  {{ indentForm.value.materialType1 }}
+                </div>
+                <input *ngIf="isEdit" class="form-control" formControlName="materialType1">
+              </div>
+
+              <div class="col-4">
+                <label class="text-muted small">Material Type</label>
+                <div *ngIf="!isEdit" class="fw-semibold">
+                  {{ indentForm.value.materialType2 }}
+                </div>
+                <input *ngIf="isEdit" class="form-control" formControlName="materialType2">
+              </div>
+            </div>
+
+            <!-- Second Row -->
+            <div class="row mb-3">
+              <div class="col-4">
+                <label class="text-muted small">Quantity</label>
+                <div *ngIf="!isEdit" class="fw-semibold">
+                  {{ indentForm.value.quantity }}
+                </div>
+                <input *ngIf="isEdit" class="form-control" formControlName="quantity">
+              </div>
+
+              <div class="col-4">
+                <label class="text-muted small">Material Code</label>
+                <div *ngIf="!isEdit" class="fw-semibold">
+                  {{ indentForm.value.materialCode }}
+                </div>
+                <input *ngIf="isEdit" class="form-control" formControlName="materialCode">
+              </div>
+
+              <div class="col-4">
+                <label class="text-muted small">Estimated Price</label>
+                <div *ngIf="!isEdit" class="fw-semibold">
+                  {{ indentForm.value.estimatedPrice }}
+                </div>
+                <input *ngIf="isEdit" class="form-control" formControlName="estimatedPrice">
+              </div>
+            </div>
+
+            <!-- Third Row -->
+            <div class="row mb-3">
+
+
+              <div class="col-4">
+                <label class="text-muted small">Vendor</label>
+                <div *ngIf="!isEdit" class="fw-semibold">
+                  {{ indentForm.value.vendor }}
+                </div>
+                <input *ngIf="isEdit" class="form-control" formControlName="vendor">
+              </div>
+              <div class="col-8">
+                <label class="text-muted small">Material Description</label>
+                <div *ngIf="!isEdit" class="fw-semibold">
+                  {{ indentForm.value.materialDesc }}
+                </div>
+                <input *ngIf="isEdit" class="form-control" formControlName="materialDesc">
+              </div>
+            </div>
+
+            <!-- Reason -->
+            <label class="text-muted small">Justification / Reason</label>
+            <p *ngIf="!isEdit" class="fw-semibold">
+              {{ indentForm.value.reason }}
+            </p>
+            <textarea *ngIf="isEdit" rows="2" class="form-control" formControlName="reason"></textarea>
+
+            <!-- Buttons -->
+            <button *ngIf="!isEdit" class="custom-edit-btn my-3" (click)="toggleEdit()">
+              Edit
+            </button>
+
+
+            <button *ngIf="isEdit" class="btn btn-success px-4 my-3" (click)="saveChanges()">
+              Save And Submit
+            </button>
+
+          </form>
+
+        </div>
+      </div>
+    </div>
+
+
+
+    <!-- RIGHT SIDE: APPROVAL STATUS -->
+    <div class="col-md-5">
+      <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-body">
+
+          <h5 class="fw-bold mb-3">Approval Status</h5>
+
+          <table class="table table-bordered align-middle small">
+            <thead class="table-light">
+              <tr>
+                <th width="30%">Approval Stage</th>
+                <th width="35%">Parameter</th>
+                <th>Comment</th>
+              </tr>
+            </thead>
+
+            <tbody>
+
+              <tr>
+                <td>
+                  <span class="text-dark">Manager/HOD</span><br />
+                  <span class="text-success">● Approved</span><br />
+                  <small>10 Nov, 2025</small>
+                </td>
+                <td>
+                  <div>● Medisource Pvt. Ltd.</div>
+                  <div>● Zen Pvt. Ltd.</div>
+                </td>
+                <td>NA</td>
+              </tr>
+
+              <tr>
+                <td>
+                  <span class="text-dark">Purchase</span><br />
+                  <span class="text-success">● Approved</span><br />
+                  <small>10 Nov, 2025</small>
+                </td>
+                <td></td>
+                <td></td>
+              </tr>
+
+              <tr>
+                <td>
+                  <span class="text-dark">SAAP</span><br />
+                  <span class="text-warning">● Approved</span><br />
+                  <small>--</small>
+                </td>
+                <td></td>
+                <td></td>
+              </tr>
+
+            </tbody>
+          </table>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>

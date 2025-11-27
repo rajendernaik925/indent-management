@@ -1,0 +1,21 @@
+.dashboard-btn {
+  font-size: 18px;
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  font-weight: 600;
+  transition: 0.3s ease;
+
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+}
+
+.employee-btn {
+  background: linear-gradient(45deg, #AC2FD4, #48117E);
+}
+
+.manager-btn {
+  background: linear-gradient(45deg, #48117E, #AC2FD4);
+}

@@ -1,0 +1,162 @@
+<div class="container-flui">
+
+  <!-- ====== Overview Section ====== -->
+  <div class=" card border-0 p-2  mb-2">
+
+    <h5 class="fw-bold mb-3">Indent Request Overview</h5>
+
+    <div class="d-flex justify-content-start align-items-start gap-4">
+
+      <!-- Total Requests -->
+      <div class="d-flex flex-column pe-4 border-end">
+        <div class="text-muted">Total Requests</div>
+        <div class="fw-bold fs-4">23</div>
+      </div>
+
+      <!-- InProgress -->
+      <div class="d-flex flex-column pe-4 border-end">
+        <div class="text-muted">InProgress</div>
+        <div class="fw-bold fs-4">10</div>
+      </div>
+
+      <!-- Approved -->
+      <div class="d-flex flex-column pe-4 border-end">
+        <div class="text-muted">Approved</div>
+        <div class="fw-bold fs-4">3</div>
+      </div>
+
+      <!-- PO Created -->
+      <div class="d-flex flex-column pe-4 border-end">
+        <div class="text-muted">PO Created</div>
+        <div class="fw-bold fs-4">8</div>
+      </div>
+
+      <!-- Rejected -->
+      <div class="d-flex flex-column">
+        <div class="text-muted">Rejected</div>
+        <div class="fw-bold fs-4">2</div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="card border-0 p-2">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+
+      <!-- Title -->
+      <h5 class="fw-bold mb-0">Indent Request List <span class="text-success">({{tableData.length || 0}})</span></h5>
+
+      <div class="d-flex align-items-center gap-2">
+
+        <!-- Small Search Box -->
+        <div class="input-group input-group-sm" style="width: 260px;">
+          <input type="search" class="form-control" placeholder="Search with Indent No., Plant, Material Code">
+          <span class="input-group-text">
+            <i class="bi bi-search"></i>
+          </span>
+        </div>
+
+        <!-- Small Add Button -->
+        <!-- <button class="btn btn-success btn-sm px-3 shadow-none border-0" (click)="addNewRequest()">Add New Request</button> -->
+
+      </div>
+    </div>
+
+    <div class=" table-responsive scroll-container">
+
+      <!-- ====== Table ====== -->
+      <div class="table-responsive shadow-sm bg-white rounded">
+        <table class="table table-bordered shadow-sm table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Indent No.</th>
+              <th>Division</th>
+              <th>Material Code</th>
+              <th>Material Description</th>
+              <th>Plant</th>
+              <th>Material Type</th>
+              <th>Quantity</th>
+              <th>Current Status</th>
+              <th>Req. Date</th>
+              <!-- <th>#</th> -->
+            </tr>
+          </thead>
+
+          <tbody class="text-muted">
+            <tr class="text-muted cursor-pointer" *ngFor="let item of paginatedData"
+              (click)="manageById(item.indentNo)">
+              <td class="text-muted">{{ item.indentNo }}</td>
+              <td class="text-muted">{{ item.division }}</td>
+              <td class="text-muted">{{ item.code }}</td>
+              <td class="text-muted">{{ item.description }}</td>
+              <td class="text-muted">{{ item.plant }}</td>
+              <td class="text-muted">{{ item.type }}</td>
+              <td class="text-muted">{{ item.qty }}</td>
+              <td>
+                <span class="badge" [ngClass]="{
+                  'bg-warning-subtle text-warning': item.status === 'Pending',
+                  'bg-success-subtle text-success': item.status === 'Approved',
+                  'bg-danger-subtle text-danger': item.status === 'Rejected',
+                  'bg-info-subtle text-info': item.status === 'PO Created'
+                }">
+                  {{ item.statusText }}
+                </span>
+              </td>
+              <td class="text-muted">{{ item.reqDate }}</td>
+              <!-- <td class="text-muted">
+              <button class="btn btn-sm btn-primary" >Edit</button>
+            </td> -->
+
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <!-- FOOTER PAGINATION -->
+      <!-- <hr class="mt-2"> -->
+      <div class="d-flex justify-content-between align-items-center mt-1" *ngIf="paginatedData.length > 0">
+
+        <!-- Showing Records -->
+        <span class="small badge custom-bg text-white">
+          Showing {{ startIndex }} to {{ endIndex }} of {{ totalRecords }} Records
+        </span>
+
+        <!-- Pagination Buttons -->
+        <ul class="pagination pagination-sm mb-1">
+
+          <!-- Previous Button -->
+          <li class="page-item">
+            <button type="button" class="border-none text-white custom-action-btn px-2 py-1 me-2"
+              (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1" [ngClass]="{
+                'custom-bg': currentPage > 1,
+                'bg-secondary': currentPage === 1
+              }">
+              <i class="bi bi-chevron-left"></i>
+            </button>
+          </li>
+
+          <!-- Page Info -->
+          <li class="page-item me-2 d-none d-md-block">
+            <span class="px-3 py-1 small text-dark fw-bold border rounded bg-light">
+              Page {{ currentPage }} of {{ totalPages }}
+            </span>
+          </li>
+
+          <!-- Next Button -->
+          <li class="page-item">
+            <button type="button" class="border-none text-white custom-action-btn px-2 py-1 mr-2"
+              (click)="changePage(currentPage + 1)" [disabled]="currentPage >= totalPages" [ngClass]="{
+                'custom-bg': currentPage < totalPages,
+                'bg-secondary': currentPage >= totalPages
+              }">
+              <i class="bi bi-chevron-right"></i>
+            </button>
+          </li>
+
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

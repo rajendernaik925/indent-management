@@ -1,0 +1,25 @@
+<div class="container text-center py-5">
+
+  <h2 class="mb-4 fw-bold">Choose Your Dashboard</h2>
+
+  <p class="text-muted mb-5">Please select whether you want to access Employee or Manager module.</p>
+
+  <div class="d-flex justify-content-center gap-4">
+
+    <!-- Employee Dashboard Button -->
+    <button 
+      class="btn btn-lg px-5 py-3 dashboard-btn employee-btn"
+      routerLink="/employee" (click)="welcomeToast()">
+      Employee Module
+    </button>
+
+    <!-- Manager Dashboard Button -->
+    <button 
+      class="btn btn-lg px-5 py-3 dashboard-btn manager-btn"
+      routerLink="/manager" (click)="welcomeToast()">
+      Manager Module
+    </button>
+
+  </div>
+
+</div>

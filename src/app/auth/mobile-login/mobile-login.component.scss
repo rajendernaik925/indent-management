@@ -1,0 +1,34 @@
+/* Style adjustments */
+.input-group-text {
+  background-color: transparent;
+  border: none;
+}
+
+/* Input field adjustments */
+.form-control {
+  border: 1px solid #ced4da;
+  height: 50px; /* Adjust height */
+}
+.form-control:focus {
+  box-shadow: none;
+  border-color: #80bdff;
+}
+
+/* Icon adjustments */
+.input-group .fas {
+  color: #6c757d; /* Icon color */
+  font-size: 1rem;
+}
+.custom-bg {
+  background-color: #0575E6;
+}
+.custom-text {
+  color: #0575E6;
+}
+
+
+
+
+
+
+
