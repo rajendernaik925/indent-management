@@ -5,3 +5,17 @@
 .hover {
   color: #6c757d;
 }
+
+#profileOffcanvas {
+  .card {
+    border-radius: 12px;
+  }
+
+  hr {
+    opacity: 0.2;
+  }
+
+  i {
+    font-size: 20px;
+  }
+}

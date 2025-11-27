@@ -16,12 +16,13 @@ export class LoaderComponent implements OnInit {
   isLoading = false;
   loadingImage:string = '/images/gear-spinner.gif';
   logo: string = 'images/indent-logo.png';
+  // logo: string = 'images/Fav.png';
   private spinnerService: SpinnerService = inject(SpinnerService);
   private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
 
   ngOnInit(): void {
     this.spinnerService.loading.subscribe((loader: boolean) => {
-          loader ? this.show() : this.hide();
+          !loader ? this.show() : this.hide();
       this.cdr.detectChanges();
     });
   }

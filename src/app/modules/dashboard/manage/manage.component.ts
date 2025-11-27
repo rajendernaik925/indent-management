@@ -29,7 +29,7 @@ export class ManageComponent implements OnInit {
     materialType2: ['ZPCC'],
     quantity: ['250'],
     materialCode: ['14000003'],
-    materialDesc: ['LYCORTIN S 100 MG INJ (VIAL)'],
+    materialDesc: ['Lycortin S 100 mg inj (vial)'],
     estimatedPrice: ['15.50'],
     vendor: ['Medisource Pvt. Ltd.'],
     reason: [

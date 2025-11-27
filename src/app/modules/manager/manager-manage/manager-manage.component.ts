@@ -1,10 +1,11 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { AfterViewInit, Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CoreService } from '../../../core/services/core.services';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import * as bootstrap from 'bootstrap';
 import { COMMON_EXPORTS } from '../../../core/common-exports.constants';
+import { Tooltip } from 'bootstrap';
 
 @Component({
   selector: 'app-manager-manage',
@@ -17,7 +18,7 @@ import { COMMON_EXPORTS } from '../../../core/common-exports.constants';
   templateUrl: './manager-manage.component.html',
   styleUrl: './manager-manage.component.scss'
 })
-export class ManagerManageComponent {
+export class ManagerManageComponent implements OnInit, AfterViewInit {
 
   Id: string | null = null;
   quantityForm: FormGroup;
@@ -59,6 +60,13 @@ export class ManagerManageComponent {
   ngOnInit() {
     this.Id = this.route.snapshot.paramMap.get('id');
     console.log('Received ID:', this.Id);
+  }
+
+   ngAfterViewInit() {
+    const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.forEach((tooltipTriggerEl: any) => {
+      new Tooltip(tooltipTriggerEl);
+    });
   }
 
   back() {

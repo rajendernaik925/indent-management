@@ -3,6 +3,7 @@ import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
 import { CoreService } from '../../core/services/core.services';
+import * as bootstrap from 'bootstrap';
 
 @Component({
   selector: 'app-header',
@@ -49,13 +50,26 @@ export class HeaderComponent implements OnInit {
         this.router.navigate(['/auth/login']);
         localStorage.removeItem('rightsToAccess');
         this.coreService.displayToast({
-        type: "success",
-        message: "Logout Successful!"
-      })
+          type: "success",
+          message: "Logout Successful!"
+        })
+      } else {
+        const element = document.getElementById('profileOffcanvas');
+        if (element) {
+          const canvas = bootstrap.Offcanvas.getInstance(element);
+          if (canvas) canvas.hide();
+        }
       }
     });
   }
 
+  navigateToProfile() {
+    const element = document.getElementById('profileOffcanvas');
+    if (element) {
+      const offcanvas = new bootstrap.Offcanvas(element);
+      offcanvas.show();
+    }
+  }
 
 
 
