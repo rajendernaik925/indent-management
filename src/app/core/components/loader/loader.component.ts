@@ -14,7 +14,7 @@ import { SpinnerService } from '../../services/spinner.service';
 export class LoaderComponent implements OnInit {
 
   isLoading = false;
-  loadingImage:string = '/images/gear-spinner.gif';
+  loadingImage: string = '/images/gear-spinner.gif';
   logo: string = 'images/indent-logo.png';
   // logo: string = 'images/Fav.png';
   private spinnerService: SpinnerService = inject(SpinnerService);
@@ -22,7 +22,7 @@ export class LoaderComponent implements OnInit {
 
   ngOnInit(): void {
     this.spinnerService.loading.subscribe((loader: boolean) => {
-          !loader ? this.show() : this.hide();
+      loader ? this.show() : this.hide();
       this.cdr.detectChanges();
     });
   }

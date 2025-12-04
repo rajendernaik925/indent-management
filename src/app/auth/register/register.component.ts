@@ -2,11 +2,11 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject } from '@angular/core';
 import { IApiResponse } from '../../core/modals/api-respones';
 import { IAdmin } from '../../core/modals/admin';
-import { ITokenData } from '../../core/modals/tokent';
+// import { ITokenData } from '../../core/modals/tokent';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth.service';
-import { SettingsService } from '../../core/services/settings.service';
+// import { SettingsService } from '../../core/services/settings.service';
 import { CoreService } from '../../core/services/core.services';
 import { COMMON_EXPORTS } from '../../core/common-exports.constants';
 
@@ -28,7 +28,7 @@ export class RegisterComponent {
   private router: Router = inject(Router);
   private authService:AuthService = inject(AuthService);
   private coreService:CoreService = inject(CoreService);
-  private settingsService: SettingsService = inject(SettingsService);
+  // private settingsService: SettingsService = inject(SettingsService);
 
   loginForm: FormGroup = new FormGroup({
     firstName: new FormControl('',[Validators.required]),

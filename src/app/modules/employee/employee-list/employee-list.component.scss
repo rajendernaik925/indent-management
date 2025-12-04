@@ -1,10 +1,13 @@
 .scroll-hidden {
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* Internet Explorer 10+ */
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* Internet Explorer 10+ */
 }
 
 .scroll-hidden::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
+  display: none;
+  /* Chrome, Safari, Opera */
 }
 
 input:focus,
@@ -41,6 +44,7 @@ select:focus {
     border-radius: 4px;
   }
 }
+
 .custom-action-btn {
   line-height: 1.5;
   font-size: 12px;
@@ -79,8 +83,8 @@ select:focus {
   border-radius: 8px;
   padding: 20px 25px;
   width: 88%;
-  max-height: 100%;       // limit modal height
-  overflow-y: auto;       // enable internal scroll
+  max-height: 100%; // limit modal height
+  overflow-y: auto; // enable internal scroll
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
   font-size: 16px;
   // font-weight: 600;
@@ -118,6 +122,7 @@ select:focus {
     opacity: 0;
     transform: scale(0.9);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -130,10 +135,10 @@ select:focus {
 
 .custom-edit-btn {
   padding: 6px 26px;
-  border: 1px solid #27c27f;   // Green border
-  background-color: #e6faf1;   // Light mint green background
-  color: #1fa56a;              // Green text
-  border-radius: 10px;         // Rounded shape
+  border: 1px solid #27c27f; // Green border
+  background-color: #e6faf1; // Light mint green background
+  color: #1fa56a; // Green text
+  border-radius: 10px; // Rounded shape
   font-size: 16px;
   font-weight: 500;
   cursor: pointer;
@@ -154,4 +159,27 @@ label {
   margin-bottom: 0.25rem;
   font-size: 13px;
   color: #6c757d;
+}
+
+.left-rounded {
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+}
+
+.right-rounded {
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+}
+
+.status-btn {
+  border: 1px solid #d0d0d0;
+  background: #ffffff;
+  transition: all 0.25s ease-in-out;
+}
+
+/* Inactive button look */
+.inactive-btn {
+  background: #ffffff;
+  color: black;
+  border-color: #cfd7ff;
 }

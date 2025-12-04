@@ -11,22 +11,19 @@ export const Routes: Route[] = [
         path: 'dashboard',
         loadChildren: () => import('./dashboard/dashboard.routes').then(m => m.Routes),
       },
+
       {
-        path: 'applied',
-        loadChildren: () => import('./applied/applied.routes').then(m => m.Routes),
-      },
-      {
-        path:'settings',
+        path: 'settings',
         loadChildren: () => import('./setting/setting.routes').then(m => m.Routes)
       },
       {
-        path:'manager',
+        path: 'manager',
         // canActivate: [RoleGuard],
         // data: { expectedRole: 'manager' },
         loadChildren: () => import('./manager/manager.routes').then(m => m.Routes)
       },
       {
-        path:'employee',
+        path: 'employee',
         // canActivate: [RoleGuard],
         // data: { expectedRole: 'employee' },
         loadChildren: () => import('./employee/employee.routes').then(m => m.Routes)
@@ -37,5 +34,9 @@ export const Routes: Route[] = [
         pathMatch: 'full',
       },
     ]
+  },
+  {
+    path: 'applied',
+    loadChildren: () => import('./applied/applied.routes').then(m => m.Routes),
   }
 ];

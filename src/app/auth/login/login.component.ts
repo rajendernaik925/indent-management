@@ -6,7 +6,7 @@ import { AuthService } from '../auth.service';
 import { IApiResponse } from '../../core/modals/api-respones';
 import { HttpErrorResponse } from '@angular/common/http';
 import { CoreService } from '../../core/services/core.services';
-import { ITokenData } from '../../core/modals/tokent';
+import { IAuthResponse } from '../../core/modals/tokent';
 import { IAdmin } from '../../core/modals/admin';
 import { SettingsService } from '../../core/services/settings.service';
 import Swal from 'sweetalert2';
@@ -34,53 +34,44 @@ export class LoginComponent {
   private settingsService: SettingsService = inject(SettingsService);
 
   loginForm: FormGroup = new FormGroup({
-    email: new FormControl('', [Validators.required, Validators.email]),
-    password: new FormControl('', [Validators.required, Validators.minLength(8)]),
-    rememberMe: new FormControl(false),
+    username: new FormControl('', [Validators.required, Validators.minLength(5)]),
+    password: new FormControl('', [Validators.required, Validators.minLength(4)]),
+    // rememberMe: new FormControl(false),
   })
 
   onSubmit(): void {
     console.log("Login value: ", this.loginForm.value);
     if (this.loginForm.valid) {
       console.log(this.loginForm.value);
-      const email = this.loginForm.value.email?.trim().toLowerCase();
-      // if (email === 'manager@gmail.com') {
-      //   localStorage.setItem('rightsToAccess', 'manager');
-      // } else {
-      //   localStorage.setItem('rightsToAccess', 'employee');
-      // }
+      const username = this.loginForm.value.username?.trim().toLowerCase();
+      this.authService.Login(this.loginForm.value).subscribe({
+        next: (res: any) => {
+          // Correct type assignment
+          const tokens: IAuthResponse = {
+            jwtToken: res.jwtToken,
+            employeeAccess: res.employeeAccess
+          };
+          // Save JWT token
+          this.coreService.setTokens(tokens.jwtToken);
+          // Save employee access (employeeData + moduleAccess)
+          this.settingsService.setEmployeeAccess(tokens.employeeAccess);
+          // Optional: store for refresh
+          localStorage.setItem("employeeAccess", JSON.stringify(tokens.employeeAccess));
+          // Navigate
+          this.router.navigate(['/dashboard']);
+          this.coreService.displayToast({
+            type: 'success',
+            message: `Welcome back, ${res?.employeeAccess?.employeeData?.name}!`
+          });
+        },
 
-      // if (email === 'manager@gmail.com') {
-      //   this.router.navigate(['/manager']);
-      // } else {
-      //   this.router.navigate(['/employee']);
-      // }
-      this.router.navigate(['/dashboard']);
-      this.coreService.displayToast({
-        type: "success",
-        message: "Welcome to Indent management Dashboard"
+        error: (err: HttpErrorResponse) => {
+          this.coreService.displayToast({
+            type: 'error',
+            message: err.message
+          })
+        }
       })
-      // this.authService.Login(this.loginForm.value).subscribe({
-      //   next: (res: IApiResponse) => {
-      //     if (!res.settings.success) {
-      //       this.coreService.displayToast({
-      //         type: 'error',
-      //         message: res.settings.message
-      //       })
-      //     } else {
-      //       const tokens: ITokenData = res.data;
-      //       this.coreService.setTokens(tokens);
-      //       this.fetchUserDetail();
-      //     }
-
-      //   },
-      //   error: (err: HttpErrorResponse) => {
-      //     this.coreService.displayToast({
-      //       type: 'error',
-      //       message: err.message
-      //     })
-      //   }
-      // })
     } else {
       Object.keys(this.loginForm.controls).forEach((key) => {
         const control = this.loginForm.get(key);
@@ -93,29 +84,6 @@ export class LoginComponent {
         message: "Please Enter Valid Credentials"
       })
     }
-  }
-
-  fetchUserDetail() {
-    this.authService.fetchUserDetail().subscribe({
-      next: (res: IApiResponse) => {
-        if (!res.settings.success) {
-          this.coreService.displayToast({
-            type: 'error',
-            message: res.settings.message,
-          });
-        } else {
-          const adminData: IAdmin = res.data;
-          this.settingsService.adminInfo.set(adminData);
-          this.router.navigate(['/dashboard']);
-        }
-      },
-      error: (err: HttpErrorResponse) => {
-        this.coreService.displayToast({
-          type: 'error',
-          message: err.message,
-        });
-      }
-    })
   }
 
 }

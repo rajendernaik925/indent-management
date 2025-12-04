@@ -4,6 +4,8 @@ import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
 import { CoreService } from '../../core/services/core.services';
 import * as bootstrap from 'bootstrap';
+import { StorageService } from '../../core/services/storage.service';
+import { SettingsService } from '../../core/services/settings.service';
 
 @Component({
   selector: 'app-header',
@@ -20,12 +22,21 @@ export class HeaderComponent implements OnInit {
 
   sideImage: string = 'images/side-image.png';
   logo: string = 'images/indent-logo.png';
+  userDetail: any;
+  userAccess: any;
 
   private router: Router = inject(Router);
-  private coreService: any = inject(CoreService);
+  private coreService: CoreService = inject(CoreService);
+  private storageService: StorageService = inject(StorageService);
+  private settingService: SettingsService = inject(SettingsService);
 
   ngOnInit(): void {
-
+    const employee = this.settingService.employeeInfo();
+    this.userDetail = employee;
+    const employeeAccess = this.settingService.moduleAccess();
+    this.userAccess = employeeAccess;
+    console.log("User Detail: ", this.userDetail);
+    console.log("User Access: ", this.userAccess); 
   }
 
   logout() {
@@ -47,8 +58,8 @@ export class HeaderComponent implements OnInit {
       buttonsStyling: false
     }).then((result) => {
       if (result.isConfirmed) {
+        this.storageService.clearAll();
         this.router.navigate(['/auth/login']);
-        localStorage.removeItem('rightsToAccess');
         this.coreService.displayToast({
           type: "success",
           message: "Logout Successful!"

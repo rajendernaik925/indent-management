@@ -1,35 +1,80 @@
-import { Injectable } from "@angular/core";
-import { projectName } from "../../api.constants";
+// import { Injectable } from "@angular/core";
+// import { projectName } from "../../api.constants";
+
+// @Injectable({
+//   providedIn: 'root'
+// })
+
+// export class StorageService {
+
+//   setTokens(tokens: {accessToken: string; expiryTime: string}) {
+//     localStorage.setItem(`${projectName}_accessToken`, tokens.accessToken);
+//     // localStorage.setItem(`${projectName}_refreshToken`, tokens.refreshToken);
+//     localStorage.setItem(`${projectName}_expiryTime`, tokens.expiryTime);
+//   }
+
+//   setValue(data: {key: string; value: string}) {
+//     localStorage.setItem(`${projectName}_${data.key}`, `${data.value}`);
+//   }
+
+//   getValue(key: string) {
+//     return localStorage.getItem(`${projectName}_${key}`);
+//   }
+
+//   removeItem(key: string) {
+//     localStorage.removeItem(`${projectName}_${key}`);
+//   }
+
+//   removeTokens() {
+//     const tokens = [`${projectName}_accessToken`, `${projectName}_refreshToken`, `${projectName}_expiryTime`];
+
+//     tokens.forEach((token: string) => {
+//       localStorage.removeItem(`${token}`);
+//     });
+//   }
+// }
+
+
+
+import { Injectable } from '@angular/core';
 
 @Injectable({
   providedIn: 'root'
 })
-
 export class StorageService {
 
-  setTokens(tokens: {accessToken: string; refreshToken: string; expiryTime: string}) {
-    localStorage.setItem(`${projectName}_accessToken`, tokens.accessToken);
-    localStorage.setItem(`${projectName}_refreshToken`, tokens.refreshToken);
-    localStorage.setItem(`${projectName}_expiryTime`, tokens.expiryTime);
+  // ---- TOKEN HANDLING ---- //
+  setToken(key: string, value: string): void {
+    localStorage.setItem(key, value);
   }
 
-  setValue(data: {key: string; value: string}) {
-    localStorage.setItem(`${projectName}_${data.key}`, `${data.value}`);
+  getToken(key: string): string | null {
+    return localStorage.getItem(key);
   }
 
-  getValue(key: string) {
-    return localStorage.getItem(`${projectName}_${key}`);
+  removeToken(key: string): void {
+    localStorage.removeItem(key);
   }
 
-  removeItem(key: string) {
-    localStorage.removeItem(`${projectName}_${key}`);
+  clearAll(): void {
+    localStorage.clear();
   }
 
-  removeTokens() {
-    const tokens = [`${projectName}_accessToken`, `${projectName}_refreshToken`, `${projectName}_expiryTime`];
+  // ---- GENERIC STORAGE ---- //
+  set(key: string, value: any): void {
+    localStorage.setItem(key, JSON.stringify(value));
+  }
 
-    tokens.forEach((token: string) => {
-      localStorage.removeItem(`${token}`);
-    });
+  get<T>(key: string): T | null {
+    const data = localStorage.getItem(key);
+    return data ? JSON.parse(data) as T : null;
+  }
+
+  remove(key: string): void {
+    localStorage.removeItem(key);
+  }
+
+  removeTokens(): void {
+    localStorage.clear()
   }
 }

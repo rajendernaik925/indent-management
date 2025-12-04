@@ -1,35 +1,28 @@
 import { inject } from "@angular/core";
-import { CanActivateChildFn, Router } from "@angular/router";
+import { CanActivateChildFn, Router, UrlTree } from "@angular/router";
 import { StorageService } from "../services/storage.service";
 
-export const authGuard: CanActivateChildFn = (route, state) => {
+export const authGuard: CanActivateChildFn = (_route, state): boolean | UrlTree => {
   const router = inject(Router);
-  const storageService = inject(StorageService);
+  const storage = inject(StorageService);
 
-  const accessToken = storageService.getValue('accessToken');
-  const expiryTime = storageService.getValue('expiryTime');
+  const accessToken = storage.get<string>('accessToken');
+  const expiryTime = storage.get<number>('expiryTime');
 
-  // Bypass guard for 'register' route
-  const url = state.url;
-  if (url === '/register') {
+  const now = Math.floor(Date.now() / 1000);
+
+  // Allow public routes
+  if (state.url === '/auth' || state.url === '/login') {
     return true;
   }
 
-  // OTP Validation logic for other routes
-  if (expiryTime && (Number(expiryTime) > Date.now())) {
-    if (accessToken && accessToken.length) {
-      return true; 
-      
-    } else {
-      console.log('Removing tokens due to missing access token');
-      storageService.removeTokens();
-      router.navigateByUrl('/auth');  // Redirect to auth page
-      return false;
-    }
-  } else {
-    console.log('Removing tokens due to expired session');
-    storageService.removeTokens();
-    router.navigateByUrl('/auth');
-    return false;
+  // If access token is missing or expired → redirect to /auth
+  if (!accessToken || !expiryTime || expiryTime < now) {
+    storage.removeTokens?.(); // clear any leftover tokens
+    return router.createUrlTree(['/auth']); // redirect
   }
-}
+
+  // Token valid → allow route
+  return true;
+};
+

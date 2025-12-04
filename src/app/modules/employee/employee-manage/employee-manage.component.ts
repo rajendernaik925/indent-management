@@ -1,8 +1,9 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { AfterViewInit, Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CoreService } from '../../../core/services/core.services';
 import { FormBuilder, ReactiveFormsModule, FormGroup } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { Tooltip } from 'bootstrap';
 
 @Component({
   selector: 'app-employee-manage',
@@ -14,7 +15,7 @@ import { CommonModule } from '@angular/common';
   templateUrl: './employee-manage.component.html',
   styleUrl: './employee-manage.component.scss'
 })
-export class EmployeeManageComponent {
+export class EmployeeManageComponent implements OnInit, AfterViewInit {
 
   
     Id: string | null = null;
@@ -41,10 +42,15 @@ export class EmployeeManageComponent {
     ngOnInit() {
       this.Id = this.route.snapshot.paramMap.get('id');
       console.log('Received ID:', this.Id);
-  
-      
     }
-  
+    
+     ngAfterViewInit() {
+    const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.forEach((tooltipTriggerEl: any) => {
+      new Tooltip(tooltipTriggerEl);
+    });
+  }
+
     back() {
       window.history.back();
     }

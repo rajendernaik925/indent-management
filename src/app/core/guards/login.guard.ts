@@ -6,8 +6,8 @@ export const loginGuard: CanActivateChildFn = (route, state) => {
 
   const router = inject(Router);
   const storageService = inject(StorageService);
-  const accessToken = storageService.getValue('accessToken');
-  const expiryTime = storageService.getValue('expiryTime');
+  const accessToken = storageService.get('accessToken');
+  const expiryTime = storageService.get('expiryTime');
   if (!expiryTime || !accessToken) {
     return true;
   } else {

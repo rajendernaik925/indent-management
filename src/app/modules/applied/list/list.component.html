@@ -1,37 +1,19 @@
-<div [ngClass]="getBackgroundClass()" class="min-vh-100 text-white">
-  <div class="container-fluid">
-    <form (submit)="getWeather($event)" class="text-center mb-4">
-      <div class="input-group w-50 mx-auto">
-        <input type="text" class="form-control" placeholder="Enter City Name" [(ngModel)]="city" name="city" required />
-        <button type="submit" class="btn btn-primary">Submit</button>
-      </div>
-    </form>
-    <div *ngIf="noDataFound" class="text-danger text-center mb-3">
-      Please enter a valid city name.
-    </div>
+<div class="video-bg-container">
 
-    <div *ngIf="weatherData" class="card text-center mx-auto" style="max-width: 400px;">
-      <div class="card-body">
-        <h5 class="card-title text-primary">{{ city | titlecase }}</h5>
-        <img [src]="'https://openweathermap.org/img/wn/' + weatherData.icon + '@2x.png'"
-          [alt]="weatherData.description" />
-        <p class="lead mb-0">{{ weatherData.description | titlecase }}</p>
-        <h2 class="my-3">{{ weatherData.temp }}°C</h2>
-        <table class="table table-bordered">
-          <thead class="table-dark">
-            <tr>
-              <th>Humidity (%)</th>
-              <th>Wind (m/s)</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>{{ weatherData.humidity }}</td>
-              <td>{{ weatherData.wind }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+  <!-- Background YouTube Video -->
+  <iframe
+    class="video-bg"
+    src="https://www.youtube.com/embed/aj-h-jxK7Bs?autoplay=1&mute=1&controls=0&loop=1&playlist=aj-h-jxK7Bs"
+    frameborder="0"
+    allow="autoplay; encrypted-media"
+    allowfullscreen>
+  </iframe>
+
+  <!-- Overlay Content -->
+  <div class="content-overlay text-center text-white">
+    <h1 class="fw-bold display-4">iPhone 11</h1>
+    <p class="lead">Experience the future. Stunning design. A18 Chip. Next-Gen Camera.</p>
+    <button class="btn btn-light btn-lg px-4">Buy Now</button>
   </div>
+
 </div>

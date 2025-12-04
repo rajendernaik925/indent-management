@@ -7,12 +7,13 @@ export const routes: Routes = [
 
   {
     path: 'auth',
-    // canActivate: [loginGuard],
+    canActivate: [loginGuard],
     loadChildren: () => import('./auth/auth.routes').then(m => m.Routes),
   },
   {
     path: '',
-    // canActivate:[authGuard],
+    canActivateChild:[authGuard],
+    canActivate: [authGuard],
     loadChildren: () => import('./modules/module.routes').then(m => m.Routes),
   },
   {
