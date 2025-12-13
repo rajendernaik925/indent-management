@@ -1,7 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { COMMON_EXPORTS } from '../../../core/common-exports.constants';
-import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CoreService } from '../../../core/services/core.services';
 import { SharedModule } from '../../../shared/shared-modules';
 import { Router } from '@angular/router';
@@ -31,8 +31,9 @@ export class EmployeeListComponent implements OnInit {
 
   tableData: any[] = [];
   paginatedData: any[] = [];
+  filteredData: any[] = [];
   currentPage = 1;
-  pageSize = 6;
+  pageSize = 7;
   totalRecords = 0;
   totalPages = 0;
   startIndex = 0;
@@ -40,11 +41,15 @@ export class EmployeeListComponent implements OnInit {
   visible: boolean = false;
   userDetail: any;
   userAccess: any;
-  selectedStatus: string = '';
+  selectedStatus: string = 'all';
   showList = false;
   materialType: any[] = [];
   divisions: any[] = [];
   filteredMaterials: Material[] = [];
+  requestForm: FormGroup;
+  maxDob: Date;
+  colorTheme = 'my-custom-datepicker';
+
 
   //masters
   plant = [
@@ -160,18 +165,34 @@ export class EmployeeListComponent implements OnInit {
   private settingService: SettingsService = inject(SettingsService);
   private fb: FormBuilder = inject(FormBuilder);
 
-  requestForm: FormGroup = this.fb.group({
-    division: ['', Validators.required],
-    plant: ['', Validators.required],
-    materialType: ['', Validators.required],
-    material: ['', Validators.required],
-    materialText: ['', Validators.required],
-    // materialDesc: ['', Validators.required],
-    qty: ['', Validators.required],
-    // price: ['', Validators.required],
-    // vendor: ['', Validators.required],
-    reason: ['', Validators.required],
-  });
+  constructor() {
+    this.maxDob = new Date();
+    this.requestForm = this.fb.group({
+      materials: this.fb.array([this.createMaterialForm()])
+    });
+  }
+
+  createMaterialForm(): FormGroup {
+    return this.fb.group({
+      division: ['', Validators.required],
+      plant: ['', Validators.required],
+      materialType: ['', Validators.required],
+      materialText: ['', Validators.required],
+      material: ['', Validators.required],
+      qty: ['', Validators.required],
+      EstimatedBudget: ['', Validators.required],
+      deliveryDate: ['', Validators.required],
+      reason: ['', Validators.required],
+
+      // For dropdown handling per row
+      filteredMaterials: [[]],
+      showList: [false]
+    });
+  }
+
+  get materialsArray(): FormArray {
+    return this.requestForm.get('materials') as FormArray;
+  }
 
   ngOnInit() {
     this.materialType = [
@@ -183,8 +204,9 @@ export class EmployeeListComponent implements OnInit {
       // { value: '5004', name: 'Mumbai' },
       // { value: '5005', name: 'Bangalore' }
     ];
-
+    
     this.generateData();
+    this.applyStatusFilter();
     this.applyPagination();
 
     const employee = this.settingService.employeeInfo();
@@ -197,8 +219,9 @@ export class EmployeeListComponent implements OnInit {
     console.log("User Access: ", this.userAccess);
 
     // Auto-select single-option dropdowns
-    this.setSingleOption(this.materialType, 'materialType');
-    this.setSingleOption(this.divisions, 'division');
+    this.setSingleOption(this.materialType, 'materialType', 0);
+    this.setSingleOption(this.divisions, 'division', 0);
+
   }
 
   // Generate 50 items (while loop)
@@ -237,10 +260,37 @@ export class EmployeeListComponent implements OnInit {
 
   closeModal() {
     this.visible = false;
+    this.resetMaterialsForm();
   }
 
+
+
+  // submitRequest() {
+  //   // Use getRawValue() to include disabled controls
+  //   const formValue = this.requestForm.getRawValue();
+
+  //   if (this.requestForm.invalid) {
+  //     this.requestForm.markAllAsTouched();
+  //     this.coreService.displayToast({
+  //       type: 'error',
+  //       message: 'Please fill all required fields.'
+  //     });
+  //     return;
+  //   }
+
+  //   delete formValue.filteredMaterials;
+  //   delete formValue.showList;
+  //   console.log(formValue);
+
+  //   this.coreService.displayToast({
+  //     type: 'success',
+  //     message: 'Request added successfully - IND-2025-1006'
+  //   });
+
+  //   this.visible = false;
+  // }
+
   submitRequest() {
-    // Use getRawValue() to include disabled controls
     const formValue = this.requestForm.getRawValue();
 
     if (this.requestForm.invalid) {
@@ -252,7 +302,22 @@ export class EmployeeListComponent implements OnInit {
       return;
     }
 
-    console.log(formValue); // includes materialType and division even if disabled
+    // Remove fields from each material row
+    const cleanedMaterials = formValue.materials.map((row: any) => {
+      return {
+        division: row.division,
+        plant: row.plant,
+        materialType: row.materialType,
+        // materialText: row.materialText,
+        material: row.material,
+        qty: row.qty,
+        EstimatedBudget: row.EstimatedBudget,
+        deliveryDate: row.deliveryDate,
+        reason: row.reason
+      };
+    });
+
+    console.log(cleanedMaterials);
 
     this.coreService.displayToast({
       type: 'success',
@@ -260,31 +325,101 @@ export class EmployeeListComponent implements OnInit {
     });
 
     this.visible = false;
+    this.resetMaterialsForm();
   }
+
+
+  removeMaterial(index: number) {
+    if (this.materialsArray.length === 1) {
+      return; // ❌ prevent removing the last row
+    }
+    this.materialsArray.removeAt(index); // ✅ remove the row
+  }
+
+
+  resetMaterialsForm() {
+    const materialArray = this.requestForm.get('materials') as FormArray;
+
+    // Remove all rows
+    while (materialArray.length > 0) {
+      materialArray.removeAt(0);
+    }
+
+    // Add one fresh row
+    const newRow = this.createMaterialForm();
+    materialArray.push(newRow);
+
+    // Reapply default division
+    if (this.divisions.length === 1) {
+      newRow.get('division')?.setValue(this.divisions[0].value);
+      newRow.get('division')?.disable();
+    } else {
+      newRow.get('division')?.enable();
+    }
+
+    // Reapply default materialType
+    if (this.materialType.length === 1) {
+      newRow.get('materialType')?.setValue(this.materialType[0].value);
+      newRow.get('materialType')?.disable();
+    } else {
+      newRow.get('materialType')?.enable();
+    }
+  }
+
+
 
 
 
 
   addMaterial() {
-    this.coreService.displayToast({
-      type: 'success',
-      message: 'Material Should add!'
-    })
+    const last = this.materialsArray.at(this.materialsArray.length - 1);
+    if (last.invalid) {
+      last.markAllAsTouched();
+      return;
+    }
+
+    this.materialsArray.push(this.createMaterialForm());
+    const index = this.materialsArray.length - 1;
+
+    // Apply single-option logic
+    this.setSingleOption(this.materialType, 'materialType', index);
+    this.setSingleOption(this.divisions, 'division', index);
   }
+
 
   statusFilter(status: string) {
     this.selectedStatus = status;
-    console.log("Filter clicked:", status);
+    this.applyStatusFilter();
+    this.currentPage = 1;       // 🔥 reset to page 1 after filter
+    this.applyPagination();
+  }
+
+  applyStatusFilter() {
+    const statusMap: any = {
+      all: null,
+      approved: 'Approved',
+      rejected: 'Rejected',
+      pending: 'Pending'
+    };
+
+    if (statusMap[this.selectedStatus] === null) {
+      this.filteredData = this.tableData;   // ALL records
+    } else {
+      this.filteredData = this.tableData.filter(
+        (item) => item.status.toLowerCase() === statusMap[this.selectedStatus].toLowerCase()
+      );
+    }
+
+    this.totalRecords = this.filteredData.length;
   }
 
 
   applyPagination() {
     this.totalPages = Math.ceil(this.totalRecords / this.pageSize);
-
     const start = (this.currentPage - 1) * this.pageSize;
     const end = start + this.pageSize;
 
-    this.paginatedData = this.tableData.slice(start, end);
+    this.paginatedData = this.filteredData.slice(start, end);
 
     this.startIndex = start + 1;
     this.endIndex = Math.min(end, this.totalRecords);
@@ -305,78 +440,90 @@ export class EmployeeListComponent implements OnInit {
     });
   }
 
-  onSearch() {
-    const text = this.requestForm.get('materialText')?.value?.trim().toLowerCase();
+  onSearch(index: number) {
+    const group = this.materialsArray.at(index) as FormGroup;
+
+    const text = group.get('materialText')?.value?.trim().toLowerCase();
 
     if (!text || text.length < 3) {
-      this.filteredMaterials = [];
-      this.showList = false;  // hide dropdown for <3 chars
-      this.requestForm.get('material')?.setValue('');
+      group.patchValue({
+        filteredMaterials: [],
+        showList: false,
+        material: ''
+      });
       return;
     }
 
-    // Filter materials
-    this.filteredMaterials = this.materials.filter(m =>
+    const filtered = this.materials.filter(m =>
       m.code.toLowerCase().includes(text) ||
       m.name.toLowerCase().includes(text) ||
       (m.description && m.description.toLowerCase().includes(text))
     );
 
-    // Always show dropdown if typed >= 3 chars, even if empty
-    this.showList = true;
+    group.patchValue({
+      filteredMaterials: filtered,
+      showList: true
+    });
 
-    // Clear code if no match
-    if (this.filteredMaterials.length === 0) {
-      this.requestForm.get('material')?.setValue('');
+    if (filtered.length === 0) {
+      group.get('material')?.setValue('');
     }
   }
 
 
 
-  selectMaterial(m: any) {
-    // Bind only the code
-    this.requestForm.get('material')?.setValue(m.code);
 
-    // Display text in input
-    this.requestForm.get('materialText')?.setValue(`${m.code} - ${m.name}`);
+  selectMaterial(index: number, m: any) {
+    const group = this.materialsArray.at(index) as FormGroup;
 
-    // Hide the list
-    this.showList = false;
+    group.patchValue({
+      material: m.code,
+      materialText: `${m.code} - ${m.name}`,
+      showList: false
+    });
   }
 
-  onBlurMaterial() {
-    const text = this.requestForm.get('materialText')?.value?.trim().toLowerCase();
+
+  onBlurMaterial(index: number) {
+    const group = this.materialsArray.at(index) as FormGroup;
+    const text = group.get('materialText')?.value?.trim().toLowerCase();
 
     if (!text) {
-      this.requestForm.get('material')?.setValue('');
+      group.patchValue({ material: '' });
       return;
     }
 
-    // Check if text exactly matches any material display text
     const matched = this.materials.find(m =>
       (`${m.code} - ${m.name}`.toLowerCase() === text) ||
       (m.code.toLowerCase() === text)
     );
 
     if (!matched) {
-      // No match → clear both fields
-      this.requestForm.get('materialText')?.setValue('');
-      this.requestForm.get('material')?.setValue('');
+      group.patchValue({
+        materialText: '',
+        material: ''
+      });
     }
   }
 
-  setSingleOption(selectArray: any[], controlName: string) {
-    const control = this.requestForm.get(controlName);
+
+  setSingleOption(selectArray: any[], controlName: string, index: number) {
+    const group = this.materialsArray.at(index) as FormGroup;
+    const control = group.get(controlName);
+
     if (!control) return;
 
     if (selectArray.length === 1) {
-      control.setValue(selectArray[0].value);  // set value first
-      control.disable();                       // then disable
-      control.updateValueAndValidity();
+      control.setValue(selectArray[0].value);
+      control.disable();
     } else {
       control.enable();
     }
+
+    control.updateValueAndValidity();
   }
+
+
 
 
 }

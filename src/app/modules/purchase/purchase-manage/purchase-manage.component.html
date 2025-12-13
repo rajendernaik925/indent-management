@@ -1,0 +1,360 @@
+<div class="container-fluid">
+
+  <!-- Top Title Row -->
+
+
+  <div class="row g-4 scroll-container">
+
+    <!-- LEFT SIDE BOX -->
+    <div class="col-md-7 card border-0 rounded-4">
+      <div class="d-flex align-items-center card-bod my-2 mb-3 mx-0">
+        <i class="bi bi-chevron-left fs-4 me-2 cursor-pointer" (click)="back()"></i>
+        <h5 class="fw-bold m-0">{{Id}}</h5>
+
+        <span class="badge ms-3 bg-warning-subtle text-warning fw-semibold">
+          ● Pending Purchase Approval
+        </span>
+      </div>
+      <div class=" shadow-s border-0 rounded-4">
+        <div class="card-bod">
+
+          <h6 class="fw-bold mb-3">Indent Details</h6>
+
+          <!-- First Row -->
+          <div class="row mb-3">
+            <div class="col-md-4">
+              <label class="text-muted small">Division</label>
+
+              <div class="fw-semibold">
+                ASRA
+              </div>
+            </div>
+
+            <div class="col-md-4">
+              <label class="text-muted small">Material Type</label>
+
+              <div class="fw-semibold">
+                5003
+              </div>
+            </div>
+
+            <div class="col-md-4">
+              <label class="text-muted small">Material Type</label>
+              <div class="fw-semibold">
+                5003
+              </div>
+            </div>
+          </div>
+
+          <!-- Second Row -->
+          <div class="row mb-3">
+            <div class="col-md-4">
+              <label class="d-flex justify-content-between align-items-center text-muted small">
+                Quantity
+                <span class="text-primary cursor-pointer" (click)="quantity()">Comment</span>
+              </label>
+
+              <span class="form-control bg-light d-block">
+                250
+              </span>
+            </div>
+
+
+
+            <div class="col-md-4">
+              <label class="d-flex justify-content-between align-items-center text-muted small">
+                Vendor
+                <span class="text-primary cursor-pointer" (click)="vendorOffCanvas()">Comment</span>
+              </label>
+              <span class="form-control bg-light d-block">
+                Medisource Pvt. Ltd.
+              </span>
+            </div>
+
+            <div class="col-md-4">
+              <label class="d-flex justify-content-between align-items-center text-muted small">
+                Estimated Price
+                <span class="text-primary cursor-pointer" (click)="estimatedPrice()">Comment</span>
+              </label>
+              <span class="form-control bg-light d-block">
+                1000000
+              </span>
+            </div>
+          </div>
+
+          <!-- Third Row -->
+          <div class="row mb-3">
+
+            <div class="col-md-4">
+              <label class="text-muted small">Material Code</label>
+              <div class="fw-semibold">
+                materialCode
+              </div>
+            </div>
+
+            <div class="col-md-8">
+              <label class="text-muted small">Material Description</label>
+              <div class="fw-semibold">
+                Lycortin S 100 mg inj (vial)
+              </div>
+            </div>
+          </div>
+
+          <!-- Reason -->
+          <label class="text-muted small">Justification / Reason</label>
+          <p class="fw-semibold">
+            Required for November distribution batch. Current stock below reorder level.
+          </p>
+
+          <!-- Buttons -->
+          <!-- <button class="custom-edit-btn my-3" (click)="toggleEdit()">
+              Edit
+            </button> -->
+
+
+          <button class="btn custom-btn px-4 my-3" (click)="updateAndSave()">
+            Update Status
+          </button>
+        </div>
+      </div>
+    </div>
+
+
+
+    <!-- RIGHT SIDE: APPROVAL STATUS -->
+    <div class="col-md-5">
+      <div class="card border-0 rounded-4">
+        <div class="card-body">
+
+          <h5 class="fw-bold mb-3">Approval Status</h5>
+
+          <table class="table table-bordered align-middle small">
+            <thead class="table-light">
+              <tr>
+                <th width="30%">Approval Stage</th>
+                <th width="35%">Parameter</th>
+                <th>Comment</th>
+              </tr>
+            </thead>
+
+            <tbody>
+
+              <tr>
+                <td>
+                  <span class="text-dark" style="font-weight: 600;">Manager/HOD</span><br />
+                  <span class="custom-text" style="font-weight: 600;">● Approved</span><br />
+                  <small>10 Nov, 2025</small>
+                </td>
+                <td>
+                  <span class="text-dark" style="font-weight: 600;">Vendor</span><br />
+                  <!-- <div class="simple-line-list"> -->
+                    <div class="item">Medisource Pvt. Ltd.</div>
+                    <div class="item">Zen Pvt. Ltd.</div>
+                  <!-- </div> -->
+
+                </td>
+                <td>
+                  <span class="cursor-pointer" data-bs-toggle="tooltip" data-bs-placement="top"
+                    data-bs-custom-class="custom-tooltip"
+                    data-bs-title="Please review this section carefully — the current implementation may cause unexpected behavior and needs attention before moving forward.">
+                    Please review this section... 
+                  </span>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <span class="text-dark" style="font-weight: 600;">Purchase</span><br />
+                  <span class="text-warning" style="font-weight: 600;">● pending</span><br />
+                  <small>10 Nov, 2025</small>
+                </td>
+                <td></td>
+                <td></td>
+              </tr>
+
+              <tr>
+                <td>
+                  <span class="text-dark" style="font-weight: 600;">SAAP</span><br />
+                  <span class="text-danger" style="font-weight: 600;">● Waiting</span><br />
+                  <small>--</small>
+                </td>
+                <td></td>
+                <td></td>
+              </tr>
+
+            </tbody>
+          </table>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- save and submit offcanvas -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="updateStatusOffcanvas">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title">Update Status</h5>
+    <button type="button" class="btn-close border-0 shadow-none" data-bs-dismiss="offcanvas"></button>
+  </div>
+
+  <div class="offcanvas-body">
+    <form [formGroup]="statusForm" (ngSubmit)="submitStatus()">
+
+      <!-- Status Dropdown -->
+      <label class="form-label mt-2">Select Status</label>
+      <select formControlName="status" class="form-select">
+        <option value="">Select</option>
+        <option value="approve">Approve</option>
+        <option value="reject">Reject</option>
+        <option value="pending">Pending</option>
+      </select>
+      <div class="text-danger small" *ngIf="statusForm.get('status')?.errors && statusForm.get('status')?.touched">
+        <span *ngIf="statusForm.get('status')?.errors?.['required']">Status is required.</span>
+      </div>
+
+      <!-- Comment Input -->
+      <label class="form-label mt-3">Comment</label>
+      <input type="text" formControlName="comment" class="form-control" placeholder="Enter comment" />
+      <div class="text-danger small" *ngIf="statusForm.get('comment')?.errors && statusForm.get('comment')?.touched">
+        <span *ngIf="statusForm.get('comment')?.errors?.['required']">Comment is required.</span>
+      </div>
+
+      <!-- Submit Button -->
+      <button class="btn custom-btn mt-4 w-100" type="submit">
+        Submit
+      </button>
+    </form>
+  </div>
+</div>
+
+
+<!-- offcanvasQuantity -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasQuantity">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title fw-bold">{{ Id }} </h5>
+    <span class="ms-1 text-muted"> (Quantity)</span>
+    <button type="button" class="btn-close border-0 shadow-none" data-bs-dismiss="offcanvas"></button>
+  </div>
+  <!-- <span class="ms-3 text-muted">Quantity</span> -->
+  <div class="offcanvas-body">
+    <form [formGroup]="quantityForm" (ngSubmit)="updateQuantity()">
+
+      <!-- Requested -->
+      <label class="form-label mt-2">Requested</label>
+      <span class="form-control bg-light d-block">
+        250
+      </span>
+
+      <!-- New Quantity -->
+      <label class="form-label mt-3">Your Suggestion/New</label>
+      <input type="text" formControlName="newQty" class="form-control" placeholder="Enter new quantity" />
+      <div class="text-danger small" *ngIf="quantityForm.get('newQty')?.errors && quantityForm.get('newQty')?.touched">
+        <span *ngIf="quantityForm.get('newQty')?.errors?.['required']">Quantity is required.</span>
+        <span *ngIf="quantityForm.get('newQty')?.errors?.['min']">Quantity must be at least 1.</span>
+      </div>
+
+      <!-- Comment -->
+      <label class="form-label mt-3">Comment</label>
+      <input type="text" formControlName="comment" class="form-control" placeholder="Add comment" />
+      <div class="text-danger small"
+        *ngIf="quantityForm.get('comment')?.errors && quantityForm.get('comment')?.touched">
+        <span *ngIf="quantityForm.get('comment')?.errors?.['required']">Comment is required.</span>
+        <span *ngIf="quantityForm.get('comment')?.errors?.['minlength']">Minimum 2 characters required.</span>
+      </div>
+
+      <button class="btn custom-btn mt-4 w-100" type="submit">
+        Update Status
+      </button>
+    </form>
+  </div>
+</div>
+
+
+
+<!-- offcanvasPrice -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasPrice">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title">{{ Id }} </h5>
+    <span class="ms-1 text-muted"> (Estimated Change)</span>
+    <button type="button" class="btn-close border-0 shadow-none" data-bs-dismiss="offcanvas"></button>
+  </div>
+
+  <div class="offcanvas-body">
+    <form [formGroup]="priceChangeForm" (ngSubmit)="updatePriceChange()">
+
+      <!-- Current Estimated Change -->
+      <label class="form-label mt-2">Current Estimated Change</label>
+      <span class="form-control bg-light d-block">
+        1000000
+      </span>
+
+      <!-- New Estimated Change -->
+      <label class="form-label mt-3">New Estimated Change</label>
+      <input type="text" formControlName="newChange" class="form-control" placeholder="Enter new estimated change" />
+      <div class="text-danger small"
+        *ngIf="priceChangeForm.get('newChange')?.errors && priceChangeForm.get('newChange')?.touched">
+        <span *ngIf="priceChangeForm.get('newChange')?.errors?.['required']">Estimated change is required.</span>
+        <span *ngIf="priceChangeForm.get('newChange')?.errors?.['min']">Value must be at least 1.</span>
+      </div>
+
+      <!-- Comment -->
+      <label class="form-label mt-3">Comment</label>
+      <input type="text" formControlName="comment" class="form-control" placeholder="Add comment" />
+      <div class="text-danger small"
+        *ngIf="priceChangeForm.get('comment')?.errors && priceChangeForm.get('comment')?.touched">
+        <span *ngIf="priceChangeForm.get('comment')?.errors?.['required']">Comment is required.</span>
+        <span *ngIf="priceChangeForm.get('comment')?.errors?.['minlength']">Minimum 2 characters required.</span>
+      </div>
+
+      <button class="btn custom-btn mt-4 w-100" type="submit">
+        Update Change
+      </button>
+    </form>
+  </div>
+</div>
+
+
+
+<!-- offcanvasVendor -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasVendor">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title">{{ Id }}</h5>
+    <span class="ms-1 text-muted"> (Vendor Change)</span>
+    <button type="button" class="btn-close border-0 shadow-none hover" data-bs-dismiss="offcanvas"></button>
+  </div>
+
+  <div class="offcanvas-body">
+    <form [formGroup]="vendorChangeForm" (ngSubmit)="updateVendorChange()">
+
+      <!-- Current Vendor -->
+      <label class="form-label mt-2">Current Vendor</label>
+      <span class="form-control bg-light d-block border-0">
+        Medisource Pvt. Ltd.
+      </span>
+      <hr class="hr-opacity-50 mt-2">
+
+      <!-- New Vendor -->
+      <label class="form-label mt-3">New Vendor</label>
+      <input type="text" formControlName="newVendor" class="form-control" placeholder="Enter new vendor name" />
+      <div class="text-danger small"
+        *ngIf="vendorChangeForm.get('newVendor')?.errors && vendorChangeForm.get('newVendor')?.touched">
+        <span *ngIf="vendorChangeForm.get('newVendor')?.errors?.['required']">New vendor is required.</span>
+        <span *ngIf="vendorChangeForm.get('newVendor')?.errors?.['minlength']">Minimum 2 characters required.</span>
+      </div>
+
+      <!-- Comment -->
+      <label class="form-label mt-3">Comment</label>
+      <input type="text" formControlName="comment" class="form-control" placeholder="Add comment" />
+      <div class="text-danger small"
+        *ngIf="vendorChangeForm.get('comment')?.errors && vendorChangeForm.get('comment')?.touched">
+        <span *ngIf="vendorChangeForm.get('comment')?.errors?.['required']">Comment is required.</span>
+        <span *ngIf="vendorChangeForm.get('comment')?.errors?.['minlength']">Minimum 2 characters required.</span>
+      </div>
+
+      <button class="btn custom-btn mt-4 w-100" type="submit">
+        Update Vendor
+      </button>
+    </form>
+  </div>
+</div>

@@ -1,117 +1,121 @@
-<div class="container-fluid scroll-container">
+<div class="container-flui scroll-container mt-2">
 
   <!-- TOP SECTION: MODULE BUTTONS -->
-  <div class="d-flex justify-content-between align-items-center mb-1">
+  <!-- <div class="d-flex justify-content-between align-items-center mb-1">
 
     <h3 class="fw-bold rainbow-text">Dashboard</h3>
 
 
     <div class="d-flex gap-3">
-      <!-- <button class="btn btn-sm btn-primary" (click)="newIndent()">
-        Create New Indent
-      </button> -->
 
       <button class="btn custom-btn btn-sm" routerLink="/employee" (click)="welcomeToast()">
         Indent Requests
       </button>
 
       <button class="btn btn-sm btn-info text-light" routerLink="/manager" (click)="welcomeToast()">
-        Manager Approval
+        Manager Approvals
       </button>
 
-      <button class="btn btn-sm btn-warning text-light " routerLink="/manager" (click)="welcomeToast()">
-        Purchase Approval
+      <button class="btn btn-sm btn-warning text-light " routerLink="/purchase" (click)="welcomeToast()">
+        Purchase Approvals
       </button>
     </div>
-  </div>
+  </div> -->
+
+  <!-- OVERVIEW CARDS -->
+  <div class="d-flex flex-wrap gap-3 mb-3">
+
+    <!-- Total Requests -->
+    <div class="card green-card shadow-sm border-0 flex-fill text-center p-3">
+      <h6 class="mb-1">Total Requests</h6>
+      <h4 class="fw-bold ">23</h4>
+    </div>
 
 
-  <!-- OVERVIEW CARD -->
-  <div class="card shadow-sm border-0 p-4 mb-2">
+    <!-- In Progress -->
+    <div class="card shadow-sm green-card border-0 flex-fill text-center p-3">
+      <h6 class="text-muted mb-2">In Progress</h6>
+      <h4 class="fw-bold text-info">10</h4>
+    </div>
 
-    <h5 class="fw-bold mb-3">Indent Request Overview</h5>
+    <!-- Approved -->
+    <div class="card shadow-sm border-0 green-card flex-fill text-center p-3">
+      <h6 class="text-muted mb-2">Approved</h6>
+      <h4 class="fw-bold text-success">3</h4>
+    </div>
 
-    <div class="d-flex justify-content-start align-items-start gap-4 flex-wrap">
+    <!-- Indent Created -->
+    <div class="card shadow-sm border-0 green-card flex-fill text-center p-3">
+      <h6 class="text-muted mb-2">Indent Created</h6>
+      <h4 class="fw-bold text-warning">8</h4>
+    </div>
 
-      <!-- Total -->
-      <div class="d-flex flex-column pe-4 border-end">
-        <span class="text-muted">Total Requests</span>
-        <span class="fw-bold fs-4 text-primary">23</span>
-      </div>
-
-      <!-- InProgress -->
-      <div class="d-flex flex-column pe-4 border-end">
-        <span class="text-muted">In Progress</span>
-        <span class="fw-bold fs-4 text-info">10</span>
-      </div>
-
-      <!-- Approved -->
-      <div class="d-flex flex-column pe-4 border-end">
-        <span class="text-muted">Approved</span>
-        <span class="fw-bold fs-4 text-success">3</span>
-      </div>
-
-      <!-- PO Created -->
-      <div class="d-flex flex-column pe-4 border-end">
-        <span class="text-muted">Indent Created</span>
-        <span class="fw-bold fs-4 text-warning">8</span>
-      </div>
-
-      <!-- Rejected -->
-      <div class="d-flex flex-column">
-        <span class="text-muted">Rejected</span>
-        <span class="fw-bold fs-4 text-danger">2</span>
-      </div>
-
+    <!-- Rejected -->
+    <div class="card shadow-sm border-0 green-card flex-fill text-center p-3">
+      <h6 class="text-muted mb-2">Rejected</h6>
+      <h4 class="fw-bold text-danger">2</h4>
     </div>
 
   </div>
+
 
 
   <!-- USER GUIDE SECTION -->
-  <div class="card border-0 shadow-sm p-4">
+  <div class="row">
+    <div class="col-md-6">
+      <div class="card border-0 shadow-sm p-4">
 
-    <h5 class="fw-bold mb-3">User Guide</h5>
+        <h5 class="fw-bold mb-3">User Guide</h5>
 
-    <div class="px-1">
+        <div class="px-1">
 
-      <div class="d-flex align-items-start mb-3">
-        <span class="badge bg-primary me-3 rounded-pill">1</span>
-        <div>
-          <strong>Indent Request Module</strong><br>
-          <small class="text-muted">
-            Used for raising purchase requests and tracking the approval cycle.
-          </small>
+          <div class="d-flex align-items-start mb-3">
+            <span class="badge bg-primary me-3 rounded-pill">1</span>
+            <div>
+              <strong>Indent Request Module</strong><br>
+              <small class="text-muted">
+                Used for raising purchase requests and tracking the approval cycle.
+              </small>
+            </div>
+          </div>
+
+          <div class="d-flex align-items-start mb-3">
+            <span class="badge bg-success me-3 rounded-pill">2</span>
+            <div>
+              <strong>Manager Module</strong><br>
+              <small class="text-muted">
+                Allows managers to approve, reject, or review indent and PO requests.
+              </small>
+            </div>
+          </div>
+
+          <div class="d-flex align-items-start mb-3">
+            <span class="badge bg-warning text-dark me-3 rounded-pill">3</span>
+            <div>
+              <strong>Purchase Module</strong><br>
+              <small class="text-muted">
+                Used to create purchase orders, manage vendors.
+              </small>
+            </div>
+          </div>
+
+          <div class="d-flex align-items-start">
+            <span class="badge bg-info text-dark me-3 rounded-pill">4</span>
+            <div>
+              <strong>Overview Section</strong><br>
+              <small class="text-muted">
+                Displays summarized counts like total requests, approved, in-progress, and rejected.
+              </small>
+            </div>
+          </div>
+
         </div>
-      </div>
 
-      <div class="d-flex align-items-start mb-3">
-        <span class="badge bg-success me-3 rounded-pill">2</span>
-        <div>
-          <strong>Manager Module</strong><br>
-          <small class="text-muted">
-            Allows managers to approve, reject, or review indent and PO requests.
-          </small>
-        </div>
       </div>
-
-      <div class="d-flex align-items-start mb-3">
-        <span class="badge bg-warning text-dark me-3 rounded-pill">3</span>
-        <div>
-          <strong>Purchase Module</strong><br>
-          <small class="text-muted">
-            Used to create purchase orders, manage vendors, and finalize procurement workflows.
-          </small>
-        </div>
-      </div>
-
-      <div class="d-flex align-items-start">
-        <span class="badge bg-info text-dark me-3 rounded-pill">4</span>
-        <div>
-          <strong>Overview Section</strong><br>
-          <small class="text-muted">
-            Displays summarized counts like total requests, approved, in-progress, and rejected.
-          </small>
+    </div>
+    <div class="col-md-6">
+      <div class="card border-0 shadow-sm p-4">
+        <div echarts [options]="chartOption" class="chart-container">
         </div>
       </div>
 
@@ -140,7 +144,8 @@
       <div class="row">
         <div class="col-md-3 mb-3">
           <label class="form-label fw-semibold">Description</label>
-          <input type="text" class="form-control form-select-sm" formControlName="description" placeholder="Enter description">
+          <input type="text" class="form-control form-select-sm" formControlName="description"
+            placeholder="Enter description">
         </div>
 
         <div class="col-md-3 mb-3">
@@ -155,7 +160,8 @@
 
         <div class="col-md-3 mb-3">
           <label class="form-label fw-semibold">Quantity</label>
-          <input type="number" class="form-control form-select-sm" formControlName="quantity" placeholder="Enter quantity">
+          <input type="number" class="form-control form-select-sm" formControlName="quantity"
+            placeholder="Enter quantity">
         </div>
       </div>
 
@@ -163,12 +169,14 @@
       <div class="row">
         <div class="col-md-3 mb-3">
           <label class="form-label fw-semibold">Material Code</label>
-          <input type="text" class="form-control form-select-sm" formControlName="materialCode" placeholder="Enter material code">
+          <input type="text" class="form-control form-select-sm" formControlName="materialCode"
+            placeholder="Enter material code">
         </div>
 
         <div class="col-md-3 mb-3">
           <label class="form-label fw-semibold">Material Type</label>
-          <input type="text" class="form-control form-select-sm" formControlName="materialType" placeholder="Enter material Type">
+          <input type="text" class="form-control form-select-sm" formControlName="materialType"
+            placeholder="Enter material Type">
         </div>
 
         <div class="col-md-3 mb-3">
@@ -178,10 +186,11 @@
 
         <div class="col-md-3 mb-3">
           <label class="form-label fw-semibold">Remarks</label>
-          <textarea class="form-control form-select-sm" rows="1" formControlName="remarks" placeholder="Additional notes"></textarea>
+          <textarea class="form-control form-select-sm" rows="1" formControlName="remarks"
+            placeholder="Additional notes"></textarea>
         </div>
 
-        
+
       </div>
 
       <div class="mt-2 d-flex gap-3 justify-content-end">

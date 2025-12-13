@@ -1,37 +1,32 @@
 <div class="container-flui">
 
   <!-- ====== Overview Section ====== -->
-  <div class="card border-0 p-2  mb-2">
+  <!-- <div class="card border-0 p-2  mb-2">
 
     <h5 class="fw-bold mb-3">Indent Request Overview</h5>
 
     <div class="d-flex justify-content-start align-items-start gap-4">
 
-      <!-- Total Requests -->
       <div class="d-flex flex-column pe-4 border-end">
         <div class="text-muted">Total Requests</div>
         <div class="fw-bold fs-4">23</div>
       </div>
 
-      <!-- InProgress -->
       <div class="d-flex flex-column pe-4 border-end">
         <div class="text-muted">InProgress</div>
         <div class="fw-bold fs-4">10</div>
       </div>
 
-      <!-- Approved -->
       <div class="d-flex flex-column pe-4 border-end">
         <div class="text-muted">Approved</div>
         <div class="fw-bold fs-4">3</div>
       </div>
 
-      <!-- PO Created -->
       <div class="d-flex flex-column pe-4 border-end">
         <div class="text-muted">PO Created</div>
         <div class="fw-bold fs-4">8</div>
       </div>
 
-      <!-- Rejected -->
       <div class="d-flex flex-column">
         <div class="text-muted">Rejected</div>
         <div class="fw-bold fs-4">2</div>
@@ -39,9 +34,9 @@
 
     </div>
 
-  </div>
+  </div> -->
 
-  <div class="card border-0 p-2">
+  <div class="card border-0 p-2 mt-1">
     <div class="card-bod border-0 d-flex justify-content-between align-items-center mb-1">
 
       <!-- LEFT SIDE: Title + Radio Buttons -->
@@ -49,11 +44,11 @@
         <!-- Title -->
         <h5 class="fw-bold mb-0">
           Indent Request List
-          <span class="custom-text">({{ tableData.length || 0 }})</span>
+          <span class="custom-text">({{ totalRecords || 0 }})</span>
         </h5>
 
         <!-- Radio Button Group -->
-        <div class="btn-group" role="group">
+        <!-- <div class="btn-group" role="group">
 
           <button type="button" class="btn btn-sm left-rounded status-btn"
             [ngClass]="selectedStatus === 'approved' ? 'custom-btn' : 'inactive-btn'"
@@ -72,6 +67,26 @@
             Pending
           </button>
 
+        </div> -->
+
+        <div class="ios-tab-container">
+          <div class="ios-tab-slider" [ngClass]="selectedStatus"></div>
+
+          <div class="ios-tab" [class.active]="selectedStatus === 'all'" (click)="statusFilter('all')">
+            All Records
+          </div>
+
+          <div class="ios-tab" [class.active]="selectedStatus === 'approved'" (click)="statusFilter('approved')">
+            Approved
+          </div>
+
+          <div class="ios-tab" [class.active]="selectedStatus === 'rejected'" (click)="statusFilter('rejected')">
+            Rejected
+          </div>
+
+          <div class="ios-tab" [class.active]="selectedStatus === 'pending'" (click)="statusFilter('pending')">
+            Pending
+          </div>
         </div>
 
 
@@ -206,124 +221,134 @@
   <div class="modal-content">
 
     <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-1">
+    <!-- <div class="d-flex justify-content-between align-items-center mb-1">
       <h5 class="m-0 fw-bold text-success">New Request </h5>
       <span class="close-btn" (click)="closeModal()">&times;</span>
+    </div> -->
+    <div class="d-flex justify-content-between align-items-center position-relative mb-1">
+      <h5 class="m-0 fw-bold text-success mx-auto">New Request</h5>
+      <span class="close-btn position-absolute end-0" (click)="closeModal()">&times;</span>
     </div>
 
+
     <form [formGroup]="requestForm">
-      <span class="text-dark fw-bold">Planned Budget: ₹8,00,000 | Estimated Budget: ₹3,00,000</span>
+      <div formArrayName="materials">
+        <div class="border p-3 mb-3 rounded" *ngFor="let group of materialsArray.controls; let i = index"
+          [formGroupName]="i">
 
-      <!-- <span class="fw-bold mb-3">Indent Details</span> -->
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="text-dark fw-bold">
+              Planned Budget: ₹8,00,000 | Estimated Budget: ₹3,00,000
+            </span>
 
-      <!-- 3 COLUMN GRID -->
-      <div class="row mt-1 g-3">
-        <!-- Division -->
-        <div class="col-md-3">
-          <label class="form-label">Division</label>
-          <select class="form-select form-select-sm" formControlName="division" [ngClass]="{
-            'is-invalid': requestForm.get('division')?.invalid && (requestForm.get('division')?.touched || requestForm.get('division')?.dirty)
-          }">
-            <option value="">Select</option>
-            <option *ngFor="let d of divisions" [value]="d?.value">{{ d?.name }}</option>
-          </select>
+            <button *ngIf="materialsArray.length > 1" type="button" class="btn btn-sm btn-danger px-2 py-0"
+              (click)="removeMaterial(i)">
+              Remove
+            </button>
+          </div>
+          <div class="row mt-1 g-3">
+
+            <!-- Division -->
+            <div class="col-md-3">
+              <label class="form-label">Division</label>
+              <select class="form-select form-select-sm" formControlName="division"
+                [ngClass]="{'is-invalid': group.get('division')?.invalid && group.get('division')?.touched}">
+                <option value="">Select</option>
+                <option *ngFor="let d of divisions" [value]="d?.value">{{ d?.name }}</option>
+              </select>
+            </div>
+
+            <!-- Plant -->
+            <div class="col-md-3">
+              <label class="form-label">Plant</label>
+              <select class="form-select form-select-sm" formControlName="plant"
+                [ngClass]="{'is-invalid': group.get('plant')?.invalid && group.get('plant')?.touched}">
+                <option value="">Select</option>
+                <option *ngFor="let m of plant" [value]="m?.value">{{ m?.name }}</option>
+              </select>
+            </div>
+
+            <!-- Material Type -->
+            <div class="col-md-3">
+              <label class="form-label">Material Type</label>
+              <select class="form-select form-select-sm" formControlName="materialType"
+                [ngClass]="{'is-invalid': group.get('materialType')?.invalid && group.get('materialType')?.touched}">
+                <option value="">Select</option>
+                <option *ngFor="let m of materialType" [value]="m?.value">{{ m?.name }}</option>
+              </select>
+            </div>
+
+            <!-- Material Search -->
+            <div class="col-md-3 position-relative">
+              <label class="form-label">Material</label>
+
+              <!-- Search Input -->
+              <input type="search" class="form-control form-control-sm" formControlName="materialText"
+                placeholder="Search material..." (input)="onSearch(i)" (blur)="onBlurMaterial(i)" [ngClass]="{
+                 'is-invalid':
+                   group.get('materialText')?.invalid &&
+                   (group.get('materialText')?.touched || group.get('materialText')?.dirty)
+                }" />
+
+              <!-- Dropdown -->
+              <ul class="list-group position-absolute w-100" *ngIf="group.get('showList')?.value"
+                style="z-index: 1000; max-height: 200px; overflow-y: auto;">
+
+                <li class="list-group-item list-group-item-action cursor-pointer"
+                  *ngFor="let m of group.get('filteredMaterials')?.value" (click)="selectMaterial(i, m)">
+                  {{ m.code }} - {{ m.name }}
+                </li>
+
+              </ul>
+            </div>
+
+            <!-- Quantity -->
+            <div class="col-md-3">
+              <label class="form-label">Quantity</label>
+              <input type="text" class="form-control form-control-sm" formControlName="qty" placeholder="Enter Quantity"
+                numbersOnly noFirstSpace maxlength="10"
+                [ngClass]="{'is-invalid': group.get('qty')?.invalid && group.get('qty')?.touched}">
+            </div>
+
+            <!-- estimated budget -->
+            <div class="col-md-3">
+              <label class="form-label">Estimated Budget</label>
+              <input type="text" class="form-control form-control-sm" formControlName="EstimatedBudget"
+                placeholder="Enter Estimated Budget" numbersOnly noFirstSpace maxlength="10"
+                [ngClass]="{'is-invalid': group.get('EstimatedBudget')?.invalid && group.get('EstimatedBudget')?.touched}">
+            </div>
+
+            <!-- Delivery Date  -->
+
+            <div class="col-md-3">
+              <label class="form-label">Delivery Date</label>
+              <input type="date" class="form-control form-control-sm" formControlName="deliveryDate"
+                placeholder="Enter Estimated Budget" maxlength="10"
+                [ngClass]="{'is-invalid': group.get('deliveryDate')?.invalid && group.get('deliveryDate')?.touched}">
+            </div>
+
+            <!-- Comment -->
+            <div class="col-md-3">
+              <label class="form-label">Comment</label>
+              <textarea rows="1" class="form-control form-control-sm" placeholder="Comments..." formControlName="reason"
+                maxlength="50" [ngClass]="{'is-invalid': group.get('reason')?.invalid && group.get('reason')?.touched}">
+              </textarea>
+            </div>
+          </div>
         </div>
-
-        <!-- Plant -->
-        <div class="col-md-3">
-          <label class="form-label">Plant</label>
-          <select class="form-select form-select-sm" formControlName="plant" [ngClass]="{
-            'is-invalid': requestForm.get('plant')?.invalid && (requestForm.get('plant')?.touched || requestForm.get('plant')?.dirty)
-          }">
-            <option value="">Select</option>
-            <option *ngFor="let m of plant" [value]="m?.value">{{ m?.name }}</option>
-          </select>
-        </div>
-
-        <!-- Material Type -->
-        <div class="col-md-3">
-          <label class="form-label">Material Type</label>
-          <select class="form-select form-select-sm" formControlName="materialType" [ngClass]="{
-            'is-invalid': requestForm.get('materialType')?.invalid && (requestForm.get('materialType')?.touched || requestForm.get('materialType')?.dirty)
-          }">
-            <option value="">Select</option>
-            <option *ngFor="let m of materialType" [value]="m?.value">{{ m?.name }}</option>
-          </select>
-        </div>
-
-        <!-- Material Code -->
-        <div class="col-md-3 position-relative">
-          <label class="form-label">Material</label>
-
-          <!-- Search Input -->
-          <input type="search" class="form-control form-control-sm" formControlName="materialText" (input)="onSearch()"
-            placeholder="Search material..." (blur)="onBlurMaterial()" [ngClass]="{
-            'is-invalid': requestForm.get('materialText')?.invalid && (requestForm.get('materialText')?.touched || requestForm.get('materialText')?.dirty)
-          }" />
-
-          <!-- Dropdown (only when filtered list has values) -->
-          <ul class="list-group position-absolute w-100" *ngIf="showList"
-            style="z-index: 1000; max-height: 200px; overflow-y: auto;">
-
-            <li class="list-group-item list-group-item-action cursor-pointer" *ngFor="let m of filteredMaterials"
-              (click)="selectMaterial(m)">
-              {{ m?.code }} - {{ m?.name }}
-            </li>
-
-            <!-- Material not found -->
-            <li class="list-group-item text-danger"
-              *ngIf="filteredMaterials.length === 0 && requestForm.get('materialText')?.value?.length >= 3">
-              Material not found
-            </li>
-
-          </ul>
-
-        </div>
-
-        <!-- Quantity -->
-        <div class="col-md-3">
-          <label class="form-label">Quantity</label>
-          <input type="text" class="form-control form-control-sm" formControlName="qty" numbersOnly
-            placeholder="Enter Quantity" maxlength="5" [ngClass]="{
-            'is-invalid': requestForm.get('qty')?.invalid && (requestForm.get('qty')?.touched || requestForm.get('qty')?.dirty)
-          }" />
-        </div>
-
-        <div class="col-md-9">
-          <label class="form-label">Justification / Reason</label>
-          <textarea rows="1" class="form-control form-control-sm" placeholder="Justification / Reason Required..."
-            formControlName="reason" [ngClass]="{
-            'is-invalid': requestForm.get('reason')?.invalid && (requestForm.get('reason')?.touched || requestForm.get('reason')?.dirty)
-          }"></textarea>
-        </div>
-
-        <!-- Estimated Price -->
-        <!-- <div class="col-md-3">
-          <label class="form-label">Estimated Price</label>
-          <input type="text" class="form-control form-control-sm" formControlName="price" />
-        </div> -->
-
-        <!-- Vendor -->
-        <!-- <div class="col-md-3">
-          <label class="form-label">Vendor</label>
-          <input type="text" class="form-control form-control-sm" formControlName="vendor" />
-        </div> -->
       </div>
-
-      <!-- Justification -->
-
 
       <!-- Buttons -->
       <div class="mt-4 d-flex gap-3 justify-content-end">
-        <!-- <button type="button" class="custom-edit-btn px-4" (click)="addMaterial()">
+        <button type="button" class="custom-edit-btn px-4" (click)="addMaterial()">
           Add Material
-        </button> -->
+        </button>
+
 
         <button type="button" class="btn custom-btn rounded btn-sm px-4" (click)="submitRequest()">
           Submit
         </button>
       </div>
-
 
     </form>
   </div>

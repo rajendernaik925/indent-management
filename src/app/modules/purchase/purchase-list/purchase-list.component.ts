@@ -8,21 +8,19 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-manager-list',
+  selector: 'app-purchase-list',
   standalone: true,
   imports: [
     CommonModule,
-    COMMON_EXPORTS,
-    ReactiveFormsModule,
-    FormsModule,
+    COMMON_EXPORTS, 
     SharedModule
   ],
-  templateUrl: './manager-list.component.html',
-  styleUrl: './manager-list.component.scss'
+  templateUrl: './purchase-list.component.html',
+  styleUrl: './purchase-list.component.scss'
 })
-export class ManagerListComponent {
+export class PurchaseListComponent implements OnInit {
 
-  tableData: any[] = [];
+tableData: any[] = [];
   paginatedData: any[] = [];
   currentPage = 1;
   pageSize = 7;
@@ -96,7 +94,7 @@ export class ManagerListComponent {
   }
 
   manageById(id: any) {
-    this.router.navigate(['/manager/detail', id]);
+    this.router.navigate(['/purchase/detail', id]);
     this.coreService.displayToast({
       type: 'success',
       message: `Managing Indent with ID: ${id}`
@@ -104,5 +102,6 @@ export class ManagerListComponent {
   }
 
 }
+
 
 

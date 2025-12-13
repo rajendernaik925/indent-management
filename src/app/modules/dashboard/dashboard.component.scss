@@ -1,5 +1,5 @@
 .scroll-container {
-  max-height: calc(100vh - 95px);
+  max-height: calc(100vh - 140px);
   overflow-y: auto;
    scrollbar-width: none;     // Firefox
   -ms-overflow-style: none;  // IE & Edge
@@ -40,6 +40,12 @@
     background-position: 0% 50%;   /* Move to left → right visually */
   }
 }
+
+.chart-container {
+  height: 300px;
+  width: 100%;
+}
+
 
 
 
@@ -123,3 +129,28 @@ select:focus {
   border-color: #000 !important;
   box-shadow: none !important;
 }
+
+.green-card {
+  background: linear-gradient(
+    135deg,
+    white 30%,
+    #d2e8de 100%
+  );
+  border-radius: 14px;
+}
+
+// .green-card {
+//   background: linear-gradient(
+//     135deg,
+//     #0ab86d,
+//     #0ab86d
+//   );
+//   border-radius: 14px;
+// }
+
+.green-card:hover {
+  transform: translateY(-3px);
+  transition: 0.3s ease;
+  box-shadow: 0 8px 22px rgba(10, 184, 109, 0.35);
+}
+
