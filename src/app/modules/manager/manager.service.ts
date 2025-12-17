@@ -1,47 +1,60 @@
 import { CoreService } from "../../core/services/core.services";
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
-import { moduleUrls } from '../../api.constants';
 import { catchError, Observable, throwError } from "rxjs";
+import { managerUrls } from "../../api.constants";
 
 @Injectable({
   providedIn: 'root'
 })
 
-export class appliedService {
+export class managerService {
 
   private coreService: CoreService = inject(CoreService);
   private http: HttpClient = inject(HttpClient);
 
   private handleError = (error: HttpErrorResponse): Observable<never> => {
-    let errorMessage = '';
+    console.error('API Error:', error);
+
+    let errorMessage = 'Something went wrong. Please try again';
+
+    // Network / CORS error
     if (error.status === 0) {
-      errorMessage = error.message;
-    } else {
-      errorMessage = error.error;
+      errorMessage = 'Unable to connect to server';
     }
-    this.coreService?.displayToast({
+    // Backend response
+    else if (error.error) {
+      // 🔹 CASE 1: Backend sends JSON with message
+      if (error.error.message) {
+        errorMessage = error.error.message;
+      }
+      // 🔹 CASE 2: Backend sends plain string
+      else if (typeof error.error === 'string') {
+        errorMessage = error.error;
+      }
+      // 🔹 CASE 3: Fallback
+      else if (error.message) {
+        errorMessage = error.message;
+      }
+    }
+
+    this.coreService.displayToast({
       type: 'error',
-      message: `${errorMessage}`,
+      message: errorMessage   // ✅ ONLY message shown
     });
-    return throwError(() => errorMessage);
-  }
 
-  getClinics(params: any): Observable<any> {
-    return this.http.get(`${moduleUrls.clinicList}`, { params }).pipe(
+    return throwError(() => error);
+  };
+
+  managerRequestList(params: any): Observable<any> {
+    return this.http.post(`${managerUrls.managerList}`, params).pipe(
       catchError(this.handleError),
     );
   }
 
-  addClinic(data: any = {}): Observable<any> {
-    return this.http.post(`${moduleUrls.clinicList}`, data).pipe(
-      catchError(this.handleError),
-    );
-  }
-
-  updateClinic(clinicId: string, data: any = {}): Observable<any> {
-    return this.http.put(`${moduleUrls}/${clinicId}`, data).pipe(
-      catchError(this.handleError),
-    );
-  }
+  // raiseIndentRequest(formData: FormData): Observable<string> {
+  //   return this.http.post(`${employeeUrls.raiseIndentRequest}`, formData, { responseType: 'text' }).pipe(
+  //     catchError(this.handleError)
+  //   );
+  // }
 }

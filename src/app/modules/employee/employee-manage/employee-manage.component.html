@@ -3,116 +3,159 @@
   <!-- Top Title Row -->
 
 
-  <div class="row g-4 scroll-container">
+  <div class="row g-4 ">
 
     <!-- LEFT SIDE BOX -->
     <div class="col-md-7 card shadow-sm border-0 rounded-4">
-      <div class="d-flex align-items-center card-bod my-2 mb-3 mx-0">
-        <i class="bi bi-chevron-left fs-4 me-2 cursor-pointer" (click)="back()"></i>
-        <h5 class="fw-bold m-0">{{Id}}</h5>
+      <div class="d-flex align-items-center justify-content-between mx-0 mb-2">
 
-        <span class="badge ms-3 bg-warning-subtle text-warning fw-semibold">
-          ● Pending Purchase Approval
+        <!-- Left side: back icon + indent ID + status badge -->
+        <div class="d-flex align-items-center">
+          <i class="bi bi-chevron-left fs-4 me-2 cursor-pointer" (click)="back()"></i>
+          <h5 class="fw-bold m-0">{{ indentDetailsData?.indentId }}</h5>
+
+          <span class="badge ms-3 fw-semibold" [ngClass]="{
+            'bg-success-subtle text-success': indentDetailsData?.status === 'Approved',
+            'bg-danger-subtle text-danger': indentDetailsData?.status === 'Rejected',
+            'bg-warning-subtle text-warning': indentDetailsData?.status !== 'Approved' && indentDetailsData?.status !== 'Rejected'
+          }">
+            ● {{ indentDetailsData?.status }}
+          </span>
+        </div>
+
+        <!-- Right side: button -->
+        <span *ngIf="indentDetailsData?.files" class="cursor-pointer text-light custom-btn small px-2 py-1 rounded" (click)="viewFile()">
+          View Files
         </span>
+
+
       </div>
+
       <div class=" shadow-s border-0 rounded-4">
         <div class="card-bod">
 
-          <h6 class="fw-bold mb-3">Indent Details</h6>
-
-          <form [formGroup]="indentForm">
-
-            <!-- First Row -->
-            <div class="row mb-3">
-              <div class="col-4">
-                <label class="text-muted small">Division</label>
-
-                <div *ngIf="!isEdit" class="fw-semibold">
-                  {{ indentForm.value.division }}
-                </div>
-                <input *ngIf="isEdit" class="form-control" formControlName="division">
-              </div>
-
-              <div class="col-4">
-                <label class="text-muted small">Plant</label>
-                <div *ngIf="!isEdit" class="fw-semibold">
-                  {{ indentForm.value.materialType1 }}
-                </div>
-                <input *ngIf="isEdit" class="form-control" formControlName="materialType1">
-              </div>
-
-              <div class="col-4">
-                <label class="text-muted small">Material Type</label>
-                <div *ngIf="!isEdit" class="fw-semibold">
-                  {{ indentForm.value.materialType2 }}
-                </div>
-                <input *ngIf="isEdit" class="form-control" formControlName="materialType2">
-              </div>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label text-muted small">Division</label>
+              <span class="form-control form-control-sm bg-light" readonly>
+                {{ indentDetailsData?.division || '-' }}
+              </span>
             </div>
 
-            <!-- Second Row -->
-            <div class="row mb-3">
-              <div class="col-4">
-                <label class="text-muted small">Quantity</label>
-                <div *ngIf="!isEdit" class="fw-semibold">
-                  {{ indentForm.value.quantity }}
-                </div>
-                <input *ngIf="isEdit" class="form-control" formControlName="quantity">
-              </div>
-
-              <div class="col-4">
-                <label class="text-muted small">Material</label>
-                <div *ngIf="!isEdit" class="fw-semibold">
-                  {{ indentForm.value.materialCode }}
-                </div>
-                <input *ngIf="isEdit" class="form-control" formControlName="materialCode">
-              </div>
-
-              <div class="col-4">
-                <label class="text-muted small">Estimated Price</label>
-                <div *ngIf="!isEdit" class="fw-semibold">
-                  {{ indentForm.value.estimatedPrice }}
-                </div>
-                <input *ngIf="isEdit" class="form-control" formControlName="estimatedPrice">
-              </div>
+            <div class="col-md-3">
+              <label class="form-label text-muted small">Planned Budget</label>
+              <span class="form-control form-control-sm bg-light">
+                {{ indentDetailsData?.plannedBudget || '-' }}
+              </span>
             </div>
 
-            <!-- Third Row -->
-            <!-- <div class="row mb-3">
-              <div class="col-4">
-                <label class="text-muted small">Vendor</label>
-                <div *ngIf="!isEdit" class="fw-semibold">
-                  {{ indentForm.value.vendor }}
-                </div>
-                <input *ngIf="isEdit" class="form-control" formControlName="vendor">
-              </div>
-              <div class="col-8">
-                <label class="text-muted small">Material Description</label>
-                <div *ngIf="!isEdit" class="fw-semibold">
-                  {{ indentForm.value.materialDesc }}
-                </div>
-                <input *ngIf="isEdit" class="form-control" formControlName="materialDesc">
-              </div>
+            <div class="col-md-3">
+              <label class="form-label text-muted small">Estimated Budget</label>
+              <span class="form-control form-control-sm bg-light">
+                {{ indentDetailsData?.estimatedBudget || '-' }}
+              </span>
+            </div>
+
+            <!-- <div class="col-md-3">
+              <label class="form-label text-muted small">File</label>
+              <span class="form-control form-control-sm bg-light fw-semibold">
+                View Files
+              </span>
             </div> -->
+          </div>
+          <hr class="custom-hr">
 
-            <!-- Reason -->
-            <label class="text-muted small">Justification / Reason</label>
-            <p *ngIf="!isEdit" class="fw-semibold">
-              {{ indentForm.value.reason }}
-            </p>
-            <textarea *ngIf="isEdit" rows="2" class="form-control" formControlName="reason"></textarea>
+          <!-- <h6 class="fw-bold mb-3">Indent Details</h6> -->
 
-            <!-- Buttons -->
-            <button *ngIf="!isEdit" class="custom-edit-btn my-3" (click)="toggleEdit()">
+          <!-- First Row -->
+          <div class="scroll-container">
+
+            <div *ngFor="let mat of indentDetailsData?.materials; let i = index" class="mb-2">
+
+              <!-- Header -->
+              <div class="fw-semibold text-success small mb-1">
+                Material {{ i + 1 }}
+              </div>
+
+              <!-- First Row -->
+              <div class="row g-2 mb-1 small">
+                <div class="col-4">
+                  <span class="text-muted">Plant</span><br>
+                  <span class="fw-medium">{{ mat?.plantName || '-' }}</span>
+                </div>
+
+                <div class="col-4">
+                  <span class="text-muted">Material Type</span><br>
+                  <span class="fw-medium">{{ mat?.materialType || '-' }}</span>
+                </div>
+
+                <div class="col-4">
+                  <span class="text-muted">Material Type</span><br>
+                  <span class="fw-medium">{{ mat?.materialType || '-' }}</span>
+                </div>
+              </div>
+
+              <!-- Second Row -->
+              <div class="row g-2 mb-1 small">
+                <div class="col-4">
+                  <span class="text-muted">Meterial Name </span><br>
+                  <span class="fw-medium">{{ mat?.materialName || '-' }}</span>
+                </div>
+
+                <div class="col-4">
+                  <span class="text-muted">Quantity</span><br>
+                  <span class="fw-medium text-truncate d-block" title="{{ mat?.quantity }}">
+                    {{ mat?.materialName || '-' }}
+                  </span>
+                </div>
+
+                <div class="col-4">
+                  <span class="text-muted">Unit Price</span><br>
+                  <span class="fw-medium">{{ mat?.untiPrice || 0 }}</span>
+                </div>
+              </div>
+
+              <div class="row g-2 mb-1 small">
+                <div class="col-4">
+                  <span class="text-muted">Delivery Date </span><br>
+                  <span class="fw-medium">{{ mat?.deliveryDate || '-' }}</span>
+                </div>
+
+                <div class="col-4">
+                  <span class="text-muted">Vendor </span><br>
+                  <span class="fw-medium text-truncate d-block" title="{{ mat?.vendor }}">
+                    {{ mat?.materialName || '-' }}
+                  </span>
+                </div>
+
+                <div class="col-4">
+                  <span class="text-muted">Comments</span><br>
+                  <span class="fw-medium">{{ mat?.comments || 0 }}</span>
+                </div>
+              </div>
+
+              <!-- Justification -->
+              <div class="small">
+                <span class="text-muted">Justification / Reason</span><br>
+                <span>{{ mat?.comments || '-' }}</span>
+              </div>
+
+            </div>
+
+
+          </div>
+
+
+
+          <!-- Buttons -->
+          <!-- <button *ngIf="!isEdit" class="custom-edit-btn my-3" (click)="toggleEdit()">
               Edit
             </button>
 
 
             <button *ngIf="isEdit" class="btn custom-btn px-4 my-3" (click)="saveChanges()">
               Save And Submit
-            </button>
-
-          </form>
+            </button> -->
 
         </div>
       </div>
@@ -187,3 +230,28 @@
   </div>
 
 </div>
+
+
+<div *ngIf="pdfFiles.length > 0">
+  <div class="mb-2">
+    <label
+      *ngFor="let file of pdfFiles"
+      class="me-3"
+    >
+      <input
+        type="radio"
+        name="pdf"
+        (change)="onFileChange(file.url)"
+      />
+      {{ file.name }}
+    </label>
+  </div>
+
+  <iframe
+    [src]="selectedFileUrl"
+    width="100%"
+    height="600"
+    style="border: 1px solid #ccc"
+  ></iframe>
+</div>
+

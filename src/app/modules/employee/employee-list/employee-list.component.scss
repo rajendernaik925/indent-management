@@ -18,7 +18,8 @@ select:focus {
 }
 
 .scroll-container {
-  max-height: calc(100vh - 195px);
+  max-height: calc(100vh - 175px);
+  min-height: calc(100vh - 175px);
   overflow-y: auto;
 
   thead th {
@@ -238,3 +239,10 @@ label {
 .ios-tab-slider.pending {
   transform: translateX(300%);
 }
+
+.thick-icon {
+  font-size: 16px;
+  -webkit-text-stroke: 0.6px currentColor;
+}
+
+

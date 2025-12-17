@@ -17,8 +17,25 @@ select {
   font-size: 0.775rem !important;
 }
 
+label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: 13px;
+  color: #6c757d;
+}
+
+.custom-hr {
+  border: none;
+  height: 1px;
+  background-color: #198754; /* Bootstrap green */
+  opacity: 0.6;
+  margin: 0.75rem 0;
+}
+
+
 .scroll-container {
-  max-height: calc(100vh - 75px);
+  max-height: calc(100vh - 255px);
+  min-height: calc(100vh - 255px);
   overflow-y: auto;
    scrollbar-width: none;     // Firefox
   -ms-overflow-style: none;  // IE & Edge
@@ -47,6 +64,10 @@ select {
   &:active {
     transform: scale(0.95);
   }
+}
+
+.fs-small {
+  font-size: 10px;
 }
 
 

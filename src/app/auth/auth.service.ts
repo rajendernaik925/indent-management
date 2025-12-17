@@ -34,10 +34,10 @@ export class AuthService {
     );
   }
 
-  fetchUserDetail(): Observable<any> {
-    return this.http.get(`${authUrls.userDetail}`).pipe(
-      catchError(this.handleError),
-    );
-  }
+  // fetchUserDetail(): Observable<any> {
+  //   return this.http.get(`${authUrls.userDetail}`).pipe(
+  //     catchError(this.handleError),
+  //   );
+  // }
 
 }

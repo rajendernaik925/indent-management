@@ -4,12 +4,14 @@ import { FormsModule } from "@angular/forms";
 import { NumbersOnlyDirective } from "../core/directives/numbers-only.directive";
 import { StringOnlyDirective } from "../core/directives/string-only.directive";
 import { NoFirstSpaceDirective } from "../core/directives/no-first-space.directive";
+import { SafeUrlPipe } from "./pipes/safe-url.pipe";
 
 @NgModule({
   declarations: [
     NumbersOnlyDirective,
     StringOnlyDirective,
-    NoFirstSpaceDirective
+    NoFirstSpaceDirective,
+    SafeUrlPipe
   ],
   imports: [
     FormsModule,
@@ -20,7 +22,8 @@ import { NoFirstSpaceDirective } from "../core/directives/no-first-space.directi
     FormsModule,
     NumbersOnlyDirective,
     StringOnlyDirective,
-    NoFirstSpaceDirective
+    NoFirstSpaceDirective,
+    SafeUrlPipe
   ],
 })
 

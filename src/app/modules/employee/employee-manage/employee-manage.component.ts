@@ -4,86 +4,117 @@ import { CoreService } from '../../../core/services/core.services';
 import { FormBuilder, ReactiveFormsModule, FormGroup } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Tooltip } from 'bootstrap';
+import { employeeService } from '../employee.service';
+import { HttpErrorResponse } from '@angular/common/http';
+import { SafeUrlPipe } from '../../../shared/pipes/safe-url.pipe';
+import { SharedModule } from '../../../shared/shared-modules';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-employee-manage',
   standalone: true,
   imports: [
     CommonModule,
-    ReactiveFormsModule   // ✅ REQUIRED for formControlName, *ngIf
+    ReactiveFormsModule,
+    // SharedModule   
   ],
   templateUrl: './employee-manage.component.html',
   styleUrl: './employee-manage.component.scss'
 })
 export class EmployeeManageComponent implements OnInit, AfterViewInit {
 
-  
-    Id: string | null = null;
-    isEdit: boolean = false;
-  
-    private fb = inject(FormBuilder);
-    private route = inject(ActivatedRoute);
-    private coreService = inject(CoreService);
-  
-    indentForm: FormGroup = this.fb.group({
-      division: ['ASRA'],
-      materialType1: ['5003'],
-      materialType2: ['ZPCC'],
-      quantity: ['250'],
-      materialCode: ['14000003'],
-      materialDesc: ['Lycortin S 100 mg inj (vial)'],
-      estimatedPrice: ['15.50'],
-      vendor: ['Medisource Pvt. Ltd.'],
-      reason: [
-        'Required for November distribution batch. Current stock below reorder level.'
-      ]
-    });
-  
-    ngOnInit() {
-      this.Id = this.route.snapshot.paramMap.get('id');
-      console.log('Received ID:', this.Id);
+
+  Id: number | null = null;
+  isEdit: boolean = false;
+  indentDetailsData: any;
+
+  private fb = inject(FormBuilder);
+  private route = inject(ActivatedRoute);
+  private coreService = inject(CoreService);
+  private employeeService: employeeService = inject(employeeService);
+  private sanitizer: DomSanitizer = inject(DomSanitizer)
+
+
+  ngOnInit() {
+    const encodedId = this.route.snapshot.paramMap.get('id');
+    if (encodedId) {
+      const decodedOnce = atob(encodedId);
+      const decodedTwice = atob(decodedOnce);
+      this.Id = Number(decodedTwice);
+      console.log('Final Decoded ID:', this.Id);
     }
-    
-     ngAfterViewInit() {
+    this.indentDetails();
+  }
+
+
+  ngAfterViewInit() {
     const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     tooltipTriggerList.forEach((tooltipTriggerEl: any) => {
       new Tooltip(tooltipTriggerEl);
     });
   }
 
-    back() {
-      window.history.back();
-    }
-  
-    toggleEdit() {
-      this.isEdit = true;
-  
-      // patch values again to ensure input fields show previous data
-      this.indentForm.patchValue({
-        division: this.indentForm.value.division,
-        materialType1: this.indentForm.value.materialType1,
-        materialType2: this.indentForm.value.materialType2,
-        quantity: this.indentForm.value.quantity,
-        materialCode: this.indentForm.value.materialCode,
-        materialDesc: this.indentForm.value.materialDesc,
-        estimatedPrice: this.indentForm.value.estimatedPrice,
-        vendor: this.indentForm.value.vendor,
-        reason: this.indentForm.value.reason
-      });
-    }
-  
-  
-    saveChanges() {
-      console.log('Updated Data →', this.indentForm.value);
-  
-      /** API CALL HERE */
-  
-      this.isEdit = false;
-  
-      this.coreService.displayToast({
-        type: 'success',
-        message: 'Changes Saved Successfully'
-      });
-    }
+  indentDetails() {
+    this.employeeService.indentDetails(this.Id).subscribe({
+      next: (res: any) => {
+        console.log("indent details : ", res);
+        const parsedRes = typeof res === 'string' ? JSON.parse(res) : res;
+        this.indentDetailsData = parsedRes;
+      },
+      error: (err: HttpErrorResponse) => {
+        console.log("error : ", err)
+      }
+    })
   }
-  
+
+  back() {
+    window.history.back();
+  }
+
+
+
+  pdfFiles: { name: string; url: string }[] = [];
+  selectedFileUrl!: SafeResourceUrl;
+
+  viewFile() {
+    this.coreService.displayToast({
+      type: 'success',
+      message: 'Fetching files...'
+    });
+
+    this.employeeService.indentFiles(this.Id).subscribe({
+      next: (res: any) => {
+        console.log('file data:', res);
+
+        this.pdfFiles = Object.keys(res).map(key => ({
+          name: key,
+          url: res[key]
+        }));
+
+        if (this.pdfFiles.length > 0) {
+          // 🔥 sanitize first file URL
+          this.selectedFileUrl =
+            this.sanitizer.bypassSecurityTrustResourceUrl(
+              this.pdfFiles[0].url
+            );
+        }
+      },
+      error: () => {
+        this.coreService.displayToast({
+          type: 'error',
+          message: 'Failed to load files'
+        });
+      }
+    });
+  }
+
+
+  // called when radio button changes
+  onFileChange(url: string) {
+    this.selectedFileUrl =
+      this.sanitizer.bypassSecurityTrustResourceUrl(url);
+  }
+
+
+
+}
