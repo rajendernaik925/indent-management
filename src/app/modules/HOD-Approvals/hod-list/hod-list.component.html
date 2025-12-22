@@ -1,7 +1,7 @@
 <div class="container-flui">
 
   <!-- ====== Overview Section ====== -->
-  <!-- <div class="card border-0 p-2  mb-2">
+  <!-- <div class=" card border-0 p-2  mb-2">
 
     <h5 class="fw-bold mb-3">Indent Request Overview</h5>
 
@@ -37,138 +37,131 @@
   </div> -->
 
   <div class="card border-0 p-2 mt-1">
-    <div class="card-bod border-0 d-flex justify-content-between align-items-center mb-1">
+    <div class="d-flex justify-content-between align-items-center mb-2">
 
-      <!-- LEFT SIDE: Title + Radio Buttons -->
-      <div class="d-flex align-items-center gap-3">
-        <!-- Title -->
-        <h5 class="fw-bold mb-0">
-          Indent Request List
-          <span class="custom-text">({{ totalRecords || 0 }})</span>
-        </h5>
+      <!-- Title -->
+      <h5 class="fw-bold mb-0">Indent Request List</h5>
 
-        <!-- Radio Button Group -->
-        <!-- <div class="btn-group" role="group">
-
-          <button type="button" class="btn btn-sm left-rounded status-btn"
-            [ngClass]="selectedStatus === 'approved' ? 'custom-btn' : 'inactive-btn'"
-            (click)="statusFilter('approved')">
-            Approved
-          </button>
-
-          <button type="button" class="btn btn-sm status-btn"
-            [ngClass]="selectedStatus === 'rejected' ? 'custom-btn' : 'inactive-btn'"
-            (click)="statusFilter('rejected')">
-            Rejected
-          </button>
-
-          <button type="button" class="btn btn-sm right-rounded status-btn"
-            [ngClass]="selectedStatus === 'pending' ? 'custom-btn' : 'inactive-btn'" (click)="statusFilter('pending')">
-            Pending
-          </button>
-
-        </div> -->
-
-        <div class="ios-tab-container">
-          <div class="ios-tab-slider" [ngClass]="selectedStatus"></div>
-
-          <div class="ios-tab" [class.active]="selectedStatus === 'all'" (click)="statusFilter('all')">
-            All Records
-          </div>
-
-          <div class="ios-tab" [class.active]="selectedStatus === 'approved'" (click)="statusFilter('approved')">
-            Approved
-          </div>
-
-          <div class="ios-tab" [class.active]="selectedStatus === 'rejected'" (click)="statusFilter('rejected')">
-            Rejected
-          </div>
-
-          <div class="ios-tab" [class.active]="selectedStatus === 'pending'" (click)="statusFilter('pending')">
-            Pending
-          </div>
-        </div>
-
-
-
-
-      </div>
-
-      <!-- RIGHT SIDE: Search box + Add button -->
       <div class="d-flex align-items-center gap-2">
 
-        <!-- Search Box -->
-        <div class="input-group input-group-sm" style="width: 260px;">
+        <!-- Small Search Box -->
+        <!-- <div class="input-group input-group-sm" style="width: 260px;">
           <input type="search" class="form-control" placeholder="Search with Indent No., Plant, Material Code">
           <span class="input-group-text">
             <i class="bi bi-search"></i>
           </span>
+        </div> -->
+
+        <div>
+          <div class="d-flex align-items-center gap-3 px-3 py-2 border rounded-pill shadow-sm bg-white">
+
+            <!-- From Date -->
+            <span style="font-size: 11px; font-weight: 600;">From</span>
+            <input #fromDateInput type="date" class="form-control form-control-sm border-0 p-0"
+              style="font-size: 12px; height: 20px; width: 130px;" (change)="onFromDateChange(fromDateInput.value)" />
+
+            <div class="vr" style="height: 26px;"></div>
+
+            <!-- To Date -->
+            <span style="font-size: 11px; font-weight: 600;">To</span>
+            <input #toDateInput type="date" class="form-control form-control-sm border-0 p-0"
+              style="font-size: 12px; height: 20px; width: 130px;" [min]="fromDate" [class.blocked-date]="!fromDate"
+              (change)="onToDateChange(toDateInput.value)" />
+
+            <div class="vr" style="height: 26px;"></div>
+
+            <!-- Division -->
+            <span style="font-size: 11px; font-weight: 600;">Division</span>
+            <select class="form-select form-select-sm border-0 p-0" style="font-size: 12px; height: 20px; width: 140px;"
+              (change)="onDivisionChange($event)">
+              <option value="">Select</option>
+              <option *ngFor="let d of divisionList" [value]="d.division_id">{{ d.division_name }}</option>
+            </select>
+
+            <div class="vr" style="height: 26px;"></div>
+
+            <!-- Status -->
+            <span style="font-size: 11px; font-weight: 600;">Status</span>
+            <select class="form-select form-select-sm border-0 p-0" style="font-size: 12px; height: 20px; width: 140px;"
+              (change)="onStatusChange($event)">
+              <option value="">Select</option>
+              <option value="1">Approved</option>
+              <option value="2">Rejected</option>
+              <option value="3">Pending</option>
+            </select>
+
+            <i class="bi bi-arrow-clockwise text-primary cursor-pointer thick-icon" (click)="clearFilters()"></i>
+
+
+          </div>
         </div>
 
-        <!-- Add Button -->
-        <!-- <button class="btn custom-btn btn-sm px-3 shadow-none border-0 rounded" style="font-weight: 600;"
-          (click)="addNewRequest()">
-          Add New Request
-        </button> -->
+
+
+        <!-- Small Add Button -->
+        <!-- <button class="btn btn-success btn-sm px-3 shadow-none border-0" (click)="addNewRequest()">Add New Request</button> -->
 
       </div>
-
     </div>
 
-    <div class=" table-responsive scroll-container">
+    <div class="table-responsive scroll-container">
+      <div class="table-responsive shadow-m bg-white rounded">
+        <div *ngIf="managerRequestList.length > 0; else noData">
+          <table class="table table-bordered shadow-none table-hover align-middle mb-0"
+            style="table-layout:auto; width:100%;">
 
-      <!-- ====== Table ====== -->
-      <div class="table-responsive shadow-sm bg-white rounded">
-        <table class="table table-bordered shadow-none table-hover align-middle mb-0">
-          <thead class="table-light">
-            <tr>
-              <th>Indent No.</th>
-              <th>Division</th>
-              <th>Material Code</th>
-              <th>Material Description</th>
-              <th>Plant</th>
-              <th>Material Type</th>
-              <th>Quantity</th>
-              <th>Current Status</th>
-              <th>Req. Date</th>
-              <!-- <th>#</th> -->
-            </tr>
-          </thead>
+            <thead class="table-light">
+              <tr>
+                <th *ngFor="let key of tableKeys" style="white-space: nowrap; font-size: 14px; line-height: 1.2;">
+                  {{ key }}
+                </th>
+              </tr>
+            </thead>
 
-          <tbody class="text-muted">
-            <tr class="text-muted cursor-pointer" *ngFor="let item of paginatedData"
-              (click)="manageById(item.indentNo)">
-              <td class="text-muted">{{ item.indentNo }}</td>
-              <td class="text-muted">{{ item.division }}</td>
-              <td class="text-muted">{{ item.code }}</td>
-              <td class="text-muted">{{ item.description }}</td>
-              <td class="text-muted">{{ item.plant }}</td>
-              <td class="text-muted">{{ item.type }}</td>
-              <td class="text-muted">{{ item.qty }}</td>
-              <td>
-                <span class="badge" [ngClass]="{
-                  'bg-warning-subtle text-warning': item.status === 'Pending',
-                  'bg-success-subtle text-success': item.status === 'Approved',
-                  'bg-danger-subtle text-danger': item.status === 'Rejected',
-                  'bg-info-subtle text-info': item.status === 'PO Created'
-                }">
-                  {{ item.statusText }}
-                </span>
-              </td>
-              <td class="text-muted">{{ item.reqDate }}</td>
-              <!-- <td class="text-muted">
-              <button class="btn btn-sm btn-primary" >Edit</button>
-            </td> -->
+            <tbody class="text-muted">
+              <tr *ngFor="let item of managerRequestList" class="cursor-pointer" (click)="manageById(item['S.NO'])">
+                <td *ngFor="let key of tableKeys"
+                  style="white-space: nowrap; line-height: 0.9; text-transform: capitalize;">
+                  <!-- Status Column -->
+                  <ng-container *ngIf="key === 'Status'; else normalCell">
+                    <span class="badge" [ngClass]="{
+                      'bg-warning-subtle text-warning': item[key] === 'Pending Manager Approval',
+                      'bg-success-subtle text-success': item[key] === 'Approved',
+                      'bg-danger-subtle text-danger': item[key] === 'Rejected'
+                    }" style="font-size: 10px;">
+                      {{ item[key] }}
+                    </span>
+                  </ng-container>
 
-            </tr>
-          </tbody>
-        </table>
+                  <!-- Normal Column -->
+                  <ng-template #normalCell>
+                    <span style="font-size: 12px;">
+                      {{ item[key] }}
+                    </span>
+                  </ng-template>
+                </td>
+              </tr>
+
+            </tbody>
+
+
+          </table>
+        </div>
+        <!-- ====== NO DATA ====== -->
+        <ng-template #noData>
+          <div class="text-center mt-5 my-3">
+            <span class="px-3 py-2 rounded bg-warning-subtle text-warning fw-semibold d-inline-block">
+              No records found
+            </span>
+          </div>
+        </ng-template>
+
+
       </div>
 
-      <!-- Pagination -->
-      <!-- FOOTER PAGINATION -->
-      <!-- <hr class="mt-2"> -->
-      <div class="d-flex justify-content-between align-items-center mt-1" *ngIf="paginatedData.length > 0">
+
+      <!-- ====== PAGINATION ====== -->
+      <div class="d-flex justify-content-between align-items-center mt-1" *ngIf="managerRequestList.length > 0">
 
         <!-- Showing Records -->
         <span class="small badge custom-bg text-white">
@@ -178,13 +171,13 @@
         <!-- Pagination Buttons -->
         <ul class="pagination pagination-sm mb-1">
 
-          <!-- Previous Button -->
+          <!-- Previous -->
           <li class="page-item">
             <button type="button" class="border-none text-white custom-action-btn px-2 py-1 me-2"
               (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1" [ngClass]="{
-                'custom-bg': currentPage > 1,
-                'bg-secondary': currentPage === 1
-              }">
+                  'custom-bg': currentPage > 1,
+                  'bg-secondary': currentPage === 1
+                }">
               <i class="bi bi-chevron-left"></i>
             </button>
           </li>
@@ -196,21 +189,20 @@
             </span>
           </li>
 
-          <!-- Next Button -->
+          <!-- Next -->
           <li class="page-item">
-            <button type="button" class="border-none text-white custom-action-btn px-2 py-1 mr-2"
+            <button type="button" class="border-none text-white custom-action-btn px-2 py-1"
               (click)="changePage(currentPage + 1)" [disabled]="currentPage >= totalPages" [ngClass]="{
-                'custom-bg': currentPage < totalPages,
-                'bg-secondary': currentPage >= totalPages
-              }">
+                  'custom-bg': currentPage < totalPages,
+                  'bg-secondary': currentPage >= totalPages
+                }">
               <i class="bi bi-chevron-right"></i>
             </button>
           </li>
 
         </ul>
       </div>
+
     </div>
   </div>
 </div>
-
-

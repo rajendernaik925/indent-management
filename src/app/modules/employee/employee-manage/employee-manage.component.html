@@ -24,7 +24,8 @@
         </div>
 
         <!-- Right side: button -->
-        <span *ngIf="indentDetailsData?.files" class="cursor-pointer text-light custom-btn small px-2 py-1 rounded" (click)="viewFile()">
+        <span *ngIf="indentDetailsData?.files" class="cursor-pointer text-light custom-btn small px-2 rounded-pill"
+          (click)="viewFile()">
           View Files
         </span>
 
@@ -70,77 +71,95 @@
           <!-- First Row -->
           <div class="scroll-container">
 
-            <div *ngFor="let mat of indentDetailsData?.materials; let i = index" class="mb-2">
+            <div *ngFor="let mat of indentDetailsData?.materials; let i = index; let isLast = last" class="mb-3">
 
               <!-- Header -->
-              <div class="fw-semibold text-success small mb-1">
-                Material {{ i + 1 }}
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <!-- Left side -->
+                <h5 class="fw-semibold text-success">
+                  Material {{ i + 1 }}
+                </h5>
+
+                <!-- Right side button -->
+                <button *ngIf="indentDetailsData?.materials.length > 1" class="btn btn-sm btn-danger"
+                  (click)="removeMaterial(mat.sno)">
+                  Remove Material
+                </button>
+
               </div>
 
-              <!-- First Row -->
-              <div class="row g-2 mb-1 small">
-                <div class="col-4">
-                  <span class="text-muted">Plant</span><br>
-                  <span class="fw-medium">{{ mat?.plantName || '-' }}</span>
+
+              <div class="row g-2 small">
+
+                <!-- Plant -->
+                <div class="col-md-4">
+                  <label class="form-label text-muted mb-1">Plant</label>
+                  <span class="form-control form-control-sm bg-light" style="min-height: 28px;">
+                    {{ mat?.plantName || '-' }}
+                  </span>
                 </div>
 
-                <div class="col-4">
-                  <span class="text-muted">Material Type</span><br>
-                  <span class="fw-medium">{{ mat?.materialType || '-' }}</span>
+                <!-- Material Type -->
+                <div class="col-md-4">
+                  <label class="form-label text-muted mb-1">Material Type</label>
+                  <span class="form-control form-control-sm bg-light" style="min-height: 28px;">
+                    {{ mat?.materialType || '-' }}
+                  </span>
                 </div>
 
-                <div class="col-4">
-                  <span class="text-muted">Material Type</span><br>
-                  <span class="fw-medium">{{ mat?.materialType || '-' }}</span>
-                </div>
-              </div>
-
-              <!-- Second Row -->
-              <div class="row g-2 mb-1 small">
-                <div class="col-4">
-                  <span class="text-muted">Meterial Name </span><br>
-                  <span class="fw-medium">{{ mat?.materialName || '-' }}</span>
+                <!-- Quantity -->
+                <div class="col-md-4">
+                  <label class="form-label text-muted mb-1">Quantity</label>
+                  <span class="form-control form-control-sm bg-light" style="min-height: 28px;">
+                    {{ mat?.quantity || '-' }}
+                  </span>
                 </div>
 
-                <div class="col-4">
-                  <span class="text-muted">Quantity</span><br>
-                  <span class="fw-medium text-truncate d-block" title="{{ mat?.quantity }}">
+                <!-- Material Name -->
+                <div class="col-md-4">
+                  <label class="form-label text-muted mb-1">Material Name</label>
+                  <span class="form-control form-control-sm bg-light text-truncate" style="min-height: 28px;"
+                    title="{{ mat?.materialName }}">
                     {{ mat?.materialName || '-' }}
                   </span>
                 </div>
 
-                <div class="col-4">
-                  <span class="text-muted">Unit Price</span><br>
-                  <span class="fw-medium">{{ mat?.untiPrice || 0 }}</span>
-                </div>
-              </div>
-
-              <div class="row g-2 mb-1 small">
-                <div class="col-4">
-                  <span class="text-muted">Delivery Date </span><br>
-                  <span class="fw-medium">{{ mat?.deliveryDate || '-' }}</span>
-                </div>
-
-                <div class="col-4">
-                  <span class="text-muted">Vendor </span><br>
-                  <span class="fw-medium text-truncate d-block" title="{{ mat?.vendor }}">
-                    {{ mat?.materialName || '-' }}
+                <!-- Unit Price -->
+                <div class="col-md-4">
+                  <label class="form-label text-muted mb-1">Unit Price</label>
+                  <span class="form-control form-control-sm bg-light" style="min-height: 28px;">
+                    {{ mat?.unitPrice || '-' }}
                   </span>
                 </div>
 
-                <div class="col-4">
-                  <span class="text-muted">Comments</span><br>
-                  <span class="fw-medium">{{ mat?.comments || 0 }}</span>
+                <!-- Delivery Date -->
+                <div class="col-md-4">
+                  <label class="form-label text-muted mb-1">Delivery Date</label>
+                  <span class="form-control form-control-sm bg-light" style="min-height: 28px;">
+                    {{ mat?.deliveryDate | date:'dd-MM-yyyy' }}
+                  </span>
+                </div>
+
+                <!-- Vendor -->
+                <div class="col-md-4">
+                  <label class="form-label text-muted mb-1">Vendor</label>
+                  <span class="form-control form-control-sm bg-light" style="min-height: 28px;">
+                    {{ mat?.vendor || '-' }}
+                  </span>
+                </div>
+
+                <!-- Comments -->
+                <div class="col-md-8">
+                  <label class="form-label text-muted mb-1">Comments</label>
+                  <span class="form-control form-control-sm bg-light text-truncate" style="min-height: 28px;"
+                    title="{{ mat?.comments }}">
+                    {{ mat?.comments || '-' }}
+                  </span>
                 </div>
               </div>
-
-              <!-- Justification -->
-              <div class="small">
-                <span class="text-muted">Justification / Reason</span><br>
-                <span>{{ mat?.comments || '-' }}</span>
-              </div>
-
+              <hr *ngIf="!isLast">
             </div>
+
 
 
           </div>
@@ -232,26 +251,30 @@
 </div>
 
 
-<div *ngIf="pdfFiles.length > 0">
-  <div class="mb-2">
-    <label
-      *ngFor="let file of pdfFiles"
-      class="me-3"
-    >
-      <input
-        type="radio"
-        name="pdf"
-        (change)="onFileChange(file.url)"
-      />
-      {{ file.name }}
-    </label>
+
+
+<!-- PDF Overlay -->
+<div *ngIf="showPDF" class="overlay">
+
+  <!-- Close button (top-right like screenshot) -->
+  <button class="close-btn" (click)="closePDF()">✖</button>
+
+  <div class="pdf-container">
+
+    <!-- File selector -->
+    <div class="file-selector d-flex flex-nowrap gap-3 p-2">
+      <div *ngFor="let file of pdfFiles; let i = index" class="form-check me-3 py-1" style="white-space: nowrap;">
+        <input type="radio" name="pdfFiles" [checked]="selectedFileIndex === i" (change)="onFileChange(i)"
+          class="form-check-input" id="pdf{{ i }}" />
+        <label class="form-check-label ms-1 fw-bold text-truncate" style="max-width: 200px" [title]="file.name"
+          for="pdf{{ i }}">
+          {{ file.name }}
+        </label>
+      </div>
+    </div>
+
+    <!-- PDF -->
+    <iframe [src]="selectedFileUrl"></iframe>
+
   </div>
-
-  <iframe
-    [src]="selectedFileUrl"
-    width="100%"
-    height="600"
-    style="border: 1px solid #ccc"
-  ></iframe>
 </div>
-

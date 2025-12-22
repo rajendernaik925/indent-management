@@ -3,118 +3,179 @@
   <!-- Top Title Row -->
 
 
-  <div class="row g-4 scroll-container">
+  <div class="row g-4">
 
     <!-- LEFT SIDE BOX -->
-    <div class="col-md-7 card border-0 rounded-4">
-      <div class="d-flex align-items-center card-bod my-2 mb-3 mx-0">
-        <i class="bi bi-chevron-left fs-4 me-2 cursor-pointer" (click)="back()"></i>
-        <h5 class="fw-bold m-0">{{Id}}</h5>
+    <div class="col-md-7 card shadow-sm border-0 rounded-4">
+      <div class="d-flex align-items-center justify-content-between mx-0 mb-2">
 
-        <span class="badge ms-3 bg-warning-subtle text-warning fw-semibold">
-          ● Pending Purchase Approval
+        <!-- Left side: back icon + indent ID + status badge -->
+        <div class="d-flex align-items-center">
+          <i class="bi bi-chevron-left fs-4 me-2 cursor-pointer" (click)="back()"></i>
+          <h5 class="fw-bold m-0">{{ indentDetailsData?.indentId }}</h5>
+
+          <span class="badge ms-3 fw-semibold" [ngClass]="{
+            'bg-success-subtle text-success': indentDetailsData?.status === 'Approved',
+            'bg-danger-subtle text-danger': indentDetailsData?.status === 'Rejected',
+            'bg-warning-subtle text-warning': indentDetailsData?.status !== 'Approved' && indentDetailsData?.status !== 'Rejected'
+          }">
+            ● {{ indentDetailsData?.status }}
+          </span>
+        </div>
+
+        <!-- Right side: button -->
+        <span *ngIf="indentDetailsData?.files" class="cursor-pointer text-light custom-btn small px-2 rounded-pill"
+          (click)="viewFile()">
+          View Files
         </span>
+
+
       </div>
+
       <div class=" shadow-s border-0 rounded-4">
         <div class="card-bod">
 
-          <h6 class="fw-bold mb-3">Indent Details</h6>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label text-muted small">Division</label>
+              <span class="form-control form-control-sm bg-light" readonly>
+                {{ indentDetailsData?.division || '-' }}
+              </span>
+            </div>
+
+            <div class="col-md-3">
+              <label class="form-label text-muted small">Planned Budget</label>
+              <span class="form-control form-control-sm bg-light">
+                {{ indentDetailsData?.plannedBudget || '-' }}
+              </span>
+            </div>
+
+            <div class="col-md-3">
+              <label class="form-label text-muted small">Estimated Budget</label>
+              <span class="form-control form-control-sm bg-light">
+                {{ indentDetailsData?.estimatedBudget || '-' }}
+              </span>
+            </div>
+
+            <!-- <div class="col-md-3">
+              <label class="form-label text-muted small">File</label>
+              <span class="form-control form-control-sm bg-light fw-semibold">
+                View Files
+              </span>
+            </div> -->
+          </div>
+          <hr class="custom-hr">
+
+          <!-- <h6 class="fw-bold mb-3">Indent Details</h6> -->
 
           <!-- First Row -->
-          <div class="row mb-3">
-            <div class="col-md-4">
-              <label class="text-muted small">Division</label>
+          <div class="scroll-container">
 
-              <div class="fw-semibold">
-                ASRA
+            <div *ngFor="let mat of indentDetailsData?.materials; let i = index; let isLast = last" class="mb-3">
+
+              <!-- Header -->
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <!-- Left side -->
+                <h5 class="fw-semibold text-success">
+                  Material {{ i + 1 }}
+                </h5>
+
+                <!-- Right side button -->
+                <button *ngIf="indentDetailsData?.materials.length > 1" class="btn btn-sm btn-danger"
+                  (click)="removeMaterial(mat.sno)">
+                  Remove Material
+                </button>
+
               </div>
+
+              <div class="row g-2 small">
+
+                <!-- Plant -->
+                <div class="col-md-4">
+                  <label class="form-label text-muted mb-1">Plant</label>
+                  <span class="form-control form-control-sm bg-light" style="min-height: 28px;">
+                    {{ mat?.plantName || '-' }}
+                  </span>
+                </div>
+
+                <!-- Material Type -->
+                <div class="col-md-4">
+                  <label class="form-label text-muted mb-1">Material Type</label>
+                  <span class="form-control form-control-sm bg-light" style="min-height: 28px;">
+                    {{ mat?.materialType || '-' }}
+                  </span>
+                </div>
+
+                <!-- Quantity -->
+                <div class="col-md-4">
+                  <label class="form-label text-muted mb-1 d-flex justify-content-between align-items-center">
+                    <span>Quantity</span>
+                    <span class="custom-text cursor-pointer" (click)="quantity(mat.quantity)">
+                      comment
+                    </span>
+                  </label>
+
+                  <span class="form-control form-control-sm bg-light" style="min-height: 28px;">
+                    {{ mat?.quantity || '-' }}
+                  </span>
+                </div>
+
+                <!-- Material Name -->
+                <div class="col-md-4">
+                  <label class="form-label text-muted mb-1">Material Name</label>
+                  <span class="form-control form-control-sm bg-light text-truncate" style="min-height: 28px;"
+                    title="{{ mat?.materialName }}">
+                    {{ mat?.materialName || '-' }}
+                  </span>
+                </div>
+
+                <!-- Unit Price -->
+                <div class="col-md-4">
+                  <label class="form-label text-muted mb-1">Unit Price</label>
+                  <span class="form-control form-control-sm bg-light" style="min-height: 28px;">
+                    {{ mat?.unitPrice || '-' }}
+                  </span>
+                </div>
+
+                <!-- Delivery Date -->
+                <div class="col-md-4">
+                  <label class="form-label text-muted mb-1">Delivery Date</label>
+                  <span class="form-control form-control-sm bg-light" style="min-height: 28px;">
+                    {{ mat?.deliveryDate | date:'dd-MM-yyyy' }}
+                  </span>
+                </div>
+
+                <!-- Vendor -->
+                <div class="col-md-4">
+                  <label class="form-label text-muted mb-1">Vendor</label>
+                  <span class="form-control form-control-sm bg-light" style="min-height: 28px;">
+                    {{ mat?.vendor || '-' }}
+                  </span>
+                </div>
+
+                <!-- Comments -->
+                <div class="col-md-8">
+                  <label class="form-label text-muted mb-1">Comments</label>
+                  <span class="form-control form-control-sm bg-light text-truncate" style="min-height: 28px;"
+                    title="{{ mat?.comments }}">
+                    {{ mat?.comments || '-' }}
+                  </span>
+                </div>
+              </div>
+              <hr *ngIf="!isLast">
             </div>
 
-            <div class="col-md-4">
-              <label class="text-muted small">Material Type</label>
 
-              <div class="fw-semibold">
-                5003
-              </div>
-            </div>
 
-            <div class="col-md-4">
-              <label class="text-muted small">Material Type</label>
-              <div class="fw-semibold">
-                5003
-              </div>
-            </div>
+            <button class="btn btn-sm custom-btn px-4 my-2" >
+              Save And Submit
+            </button>
           </div>
 
-          <!-- Second Row -->
-          <div class="row mb-3">
-            <div class="col-md-4">
-              <label class="d-flex justify-content-between align-items-center text-muted small">
-                Quantity
-                <span class="text-primary cursor-pointer" (click)="quantity()">Comment</span>
-              </label>
-
-              <span class="form-control bg-light d-block">
-                250
-              </span>
-            </div>
 
 
+          
 
-            <div class="col-md-4">
-              <label class="d-flex justify-content-between align-items-center text-muted small">
-                Vendor
-                <span class="text-primary cursor-pointer" (click)="vendorOffCanvas()">Comment</span>
-              </label>
-              <span class="form-control bg-light d-block">
-                Medisource Pvt. Ltd.
-              </span>
-            </div>
-
-            <div class="col-md-4">
-              <label class="d-flex justify-content-between align-items-center text-muted small">
-                Estimated Price
-                <span class="text-primary cursor-pointer" (click)="estimatedPrice()">Comment</span>
-              </label>
-              <span class="form-control bg-light d-block">
-                1000000
-              </span>
-            </div>
-          </div>
-
-          <!-- Third Row -->
-          <div class="row mb-3">
-
-            <div class="col-md-4">
-              <label class="text-muted small">Material Code</label>
-              <div class="fw-semibold">
-                materialCode
-              </div>
-            </div>
-
-            <div class="col-md-8">
-              <label class="text-muted small">Material Description</label>
-              <div class="fw-semibold">
-                Lycortin S 100 mg inj (vial)
-              </div>
-            </div>
-          </div>
-
-          <!-- Reason -->
-          <label class="text-muted small">Justification / Reason</label>
-          <p class="fw-semibold">
-            Required for November distribution batch. Current stock below reorder level.
-          </p>
-
-          <!-- Buttons -->
-          <!-- <button class="custom-edit-btn my-3" (click)="toggleEdit()">
-              Edit
-            </button> -->
-
-
-          <button class="btn custom-btn px-4 my-3" (click)="updateAndSave()">
-            Update Status
-          </button>
         </div>
       </div>
     </div>
@@ -148,8 +209,8 @@
                 <td>
                   <span class="text-dark" style="font-weight: 600;">Vendor</span><br />
                   <!-- <div class="simple-line-list"> -->
-                    <div class="item">Medisource Pvt. Ltd.</div>
-                    <div class="item">Zen Pvt. Ltd.</div>
+                  <div class="item">Medisource Pvt. Ltd.</div>
+                  <div class="item">Zen Pvt. Ltd.</div>
                   <!-- </div> -->
 
                 </td>
@@ -157,7 +218,7 @@
                   <span class="cursor-pointer" data-bs-toggle="tooltip" data-bs-placement="top"
                     data-bs-custom-class="custom-tooltip"
                     data-bs-title="Please review this section carefully — the current implementation may cause unexpected behavior and needs attention before moving forward.">
-                    Please review this section... 
+                    Please review this section...
                   </span>
                 </td>
               </tr>
@@ -356,5 +417,27 @@
         Update Vendor
       </button>
     </form>
+  </div>
+</div>
+
+
+<div *ngIf="showPDF" class="overlay">
+  <div class="pdf-container">
+    <button class="close-btn btn-sm" (click)="closePDF()">✖</button>
+
+    <!-- Radio buttons for file selection -->
+    <div class="d-flex gap-3 p-2" style="overflow-x:auto;">
+      <div *ngFor="let file of pdfFiles; let i = index" class="form-check me-3 py-2">
+        <input type="radio" name="pdfFiles" [checked]="selectedFileIndex === i" (change)="onFileChange(i)"
+          class="form-check-input" id="pdf{{i}}" />
+        <label class="form-check-label ms-1 fw-bold" for="pdf{{i}}">
+          {{ file.name }}
+        </label>
+      </div>
+    </div>
+
+
+    <!-- PDF iframe -->
+    <iframe [src]="selectedFileUrl" width="100%" height="80%"></iframe>
   </div>
 </div>

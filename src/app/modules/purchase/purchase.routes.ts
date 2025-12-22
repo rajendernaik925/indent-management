@@ -1,5 +1,5 @@
 import { Route } from "@angular/router";
-import { ListComponent } from "../applied/list/list.component";
+import { PurchaseListComponent } from "./purchase-list/purchase-list.component";
 
 export const Routes: Route[] = [
   {
@@ -12,12 +12,12 @@ export const Routes: Route[] = [
   },
   {
     path: 'employee',
-    component: ListComponent,
+    component: PurchaseListComponent,
   },
   {
     path: '',
     redirectTo: 'list',
     pathMatch: 'full',
   },
-  
+
 ]

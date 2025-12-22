@@ -216,7 +216,8 @@ label {
 .ios-tab-slider {
   position: absolute;
   height: 32px;
-  width: 25%;              /* 4 tabs → 100/4 = 25% */
+  width: 25%;
+  /* 4 tabs → 100/4 = 25% */
   background: #0AB86D;
   border-radius: 30px;
   transition: transform .65s cubic-bezier(0.22, 0.61, 0.36, 1);
@@ -245,4 +246,10 @@ label {
   -webkit-text-stroke: 0.6px currentColor;
 }
 
-
+.custom-hr {
+  border: none;
+  height: 1px;
+  /* Bootstrap green */
+  opacity: 0.6;
+  margin: 0.75rem 0;
+}

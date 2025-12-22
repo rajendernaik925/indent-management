@@ -52,6 +52,18 @@ export class managerService {
     );
   }
 
+  removeMaterial(payload: any): Observable<any> {
+    return this.http.post(`${managerUrls.removeMaterial}`, payload, { responseType: 'text' }).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+   updateIndentStatus(payload: any): Observable<any> {
+    return this.http.post(`${managerUrls.processIndent}`, payload).pipe(
+      catchError(this.handleError)
+    );
+  }
+
   // raiseIndentRequest(formData: FormData): Observable<string> {
   //   return this.http.post(`${employeeUrls.raiseIndentRequest}`, formData, { responseType: 'text' }).pipe(
   //     catchError(this.handleError)

@@ -13,20 +13,6 @@ export class employeeService {
   private coreService: CoreService = inject(CoreService);
   private http: HttpClient = inject(HttpClient);
 
-  // private handleError = (error: HttpErrorResponse): Observable<never> => {
-  //   let errorMessage = '';
-  //   if (error.status === 0) {
-  //     errorMessage = error.message;
-  //   } else {
-  //     errorMessage = error.error;
-  //   }
-  //   this.coreService?.displayToast({
-  //     type: 'error',
-  //     message: `${errorMessage}`,
-  //   });
-  //   return throwError(() => errorMessage);
-  // }
-
   private handleError = (error: HttpErrorResponse): Observable<never> => {
     console.error('API Error:', error);
 
@@ -63,8 +49,8 @@ export class employeeService {
 
 
 
-  raiseIndentRequest(formData: FormData): Observable<any> {
-    return this.http.post(`${employeeUrls.raiseIndentRequest}`, formData).pipe(
+  raiseIndentRequest(formData: FormData): Observable<string> {
+    return this.http.post(`${employeeUrls.raiseIndentRequest}`, formData,{ responseType: 'text' }).pipe(
       catchError(this.handleError)
     );
   }
@@ -75,14 +61,9 @@ export class employeeService {
     );
   }
 
-  indentDetails(id: any): Observable<any> {
-    return this.http.get(`${employeeUrls.indentDetails}/${id}`).pipe(
-      catchError(this.handleError)
-    );
-  }
 
-  indentFiles(id: any): Observable<any> {
-    return this.http.get(`${employeeUrls.indentFiles}/${id}`).pipe(
+  removeMaterial(payload: any): Observable<any> {
+    return this.http.post(`${employeeUrls.removeMaterial}`, payload,{ responseType: 'text' }).pipe(
       catchError(this.handleError)
     );
   }

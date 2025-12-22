@@ -33,8 +33,4 @@ export const Routes: Route[] = [
       },
     ]
   },
-  {
-    path: 'applied',
-    loadChildren: () => import('./applied/applied.routes').then(m => m.Routes),
-  }
 ];

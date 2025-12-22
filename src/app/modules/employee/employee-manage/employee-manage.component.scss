@@ -4,6 +4,7 @@ textarea::placeholder {
   color: #6c757d;
   opacity: 0.5;
 }
+
 input:focus,
 textarea:focus,
 select:focus {
@@ -27,7 +28,8 @@ label {
 .custom-hr {
   border: none;
   height: 1px;
-  background-color: #198754; /* Bootstrap green */
+  background-color: #198754;
+  /* Bootstrap green */
   opacity: 0.6;
   margin: 0.75rem 0;
 }
@@ -37,20 +39,20 @@ label {
   max-height: calc(100vh - 255px);
   min-height: calc(100vh - 255px);
   overflow-y: auto;
-   scrollbar-width: none;     // Firefox
-  -ms-overflow-style: none;  // IE & Edge
+  scrollbar-width: none; // Firefox
+  -ms-overflow-style: none; // IE & Edge
 
   &::-webkit-scrollbar {
-    display: none;           // Chrome, Safari
+    display: none; // Chrome, Safari
   }
 }
 
 .custom-edit-btn {
   padding: 6px 26px;
-  border: 1px solid #27c27f;   // Green border
-  background-color: #e6faf1;   // Light mint green background
-  color: #1fa56a;              // Green text
-  border-radius: 10px;         // Rounded shape
+  border: 1px solid #27c27f; // Green border
+  background-color: #e6faf1; // Light mint green background
+  color: #1fa56a; // Green text
+  border-radius: 10px; // Rounded shape
   font-size: 16px;
   font-weight: 500;
   cursor: pointer;
@@ -83,8 +85,8 @@ label {
   &::before {
     content: "";
     position: absolute;
-    left: 0; 
-    top: 8px;     // center alignment
+    left: 0;
+    top: 8px; // center alignment
     width: 6px;
     height: 6px;
     background-color: black;
@@ -95,10 +97,87 @@ label {
   &:not(:last-child)::after {
     content: "";
     position: absolute;
-    left: 2px;     // half of dot width => centers the line
-    top: 14px;     // starts from center bottom of dot
+    left: 2px; // half of dot width => centers the line
+    top: 14px; // starts from center bottom of dot
     width: 2px;
-    height: calc(100% - 6px);  // ends at center of next dot
+    height: calc(100% - 6px); // ends at center of next dot
     background-color: rgb(185, 181, 181);
   }
+}
+
+/* Overlay */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  z-index: 1000;
+}
+
+/* Close button EXACT like screenshot */
+.close-btn {
+  position: fixed;
+  top: 60px;
+  right: 162px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: red;
+  color: white;
+  border: none;
+  font-size: 20px;
+  font-weight: 700;
+  cursor: pointer;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.close-btn:hover {
+  background: rgb(158, 5, 5);
+  color: white;
+}
+
+/* PDF container */
+.pdf-container {
+  position: absolute;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70%;
+  height: calc(100% - 80px);
+  background: #ffffff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+}
+
+/* File selector */
+.file-selector {
+  border-bottom: 1px solid #ddd;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+/* PDF iframe */
+.pdf-container iframe {
+  width: 100%;
+  height: calc(100% - 36px);
+  border: none;
+}
+
+/* Radio selected styling */
+.form-check-input:checked + .form-check-label {
+  color: #0AB86D;
+  font-weight: 600;
+}
+
+.form-check-input:checked {
+  background-color: #0AB86D;
+  border-color: #0AB86D;
+}
+
+.form-check-input:checked[type="radio"] {
+  background-image: radial-gradient(circle, #fff 35%, #0AB86D 36%);
 }

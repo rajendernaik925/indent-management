@@ -1,13 +1,14 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse } from '@angular/common/http';
 import { COMMON_EXPORTS } from '../../../core/common-exports.constants';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CoreService } from '../../../core/services/core.services';
 import { SharedModule } from '../../../shared/shared-modules';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { managerService } from '../manager.service';
 import { SettingsService } from '../../../core/services/settings.service';
+import { masterService } from '../../master.service';
 
 @Component({
   selector: 'app-manager-list',
@@ -22,7 +23,7 @@ import { SettingsService } from '../../../core/services/settings.service';
   templateUrl: './manager-list.component.html',
   styleUrl: './manager-list.component.scss'
 })
-export class ManagerListComponent {
+export class ManagerListComponent implements OnInit {
 
   userDetail: any;
   userId: any;
@@ -31,6 +32,7 @@ export class ManagerListComponent {
   paginatedData: any[] = [];
   managerRequestList: any[] = [];
   tableKeys: string[] = [];
+  divisionList: any[] = [];
   currentPage = 1;
   pageSize = 7;
   totalRecords = 0;
@@ -42,11 +44,13 @@ export class ManagerListComponent {
   fromDate: string | null = null;
   toDate: string | null = null;
   selectedDivisionId: number | null = null;
+  selectedStatusId: number | null = null;
 
   private coreService: CoreService = inject(CoreService);
   private router: Router = inject(Router);
   private managerService: managerService = inject(managerService);
   private settingService: SettingsService = inject(SettingsService);
+  private masterService: masterService = inject(masterService);
 
   ngOnInit() {
     const employee = this.settingService.employeeInfo();
@@ -59,59 +63,11 @@ export class ManagerListComponent {
       this.currentPage,
       this.fromDate,
       this.toDate,
-      this.selectedDivisionId
+      this.selectedDivisionId,
+      this.selectedStatusId
     );
-    this.generateData();
-    this.applyPagination();
-  }
 
-  // Generate 50 items (while loop)
-  generateData() {
-    let i = 1;
-
-    while (i <= 50) {
-
-      const statusList = [
-        { status: 'Pending', statusText: 'Pending Manager Approval' },
-        { status: 'Approved', statusText: 'Approved by HOD' },
-        { status: 'Rejected', statusText: 'Rejected' },
-        { status: 'PO Created', statusText: 'PO Created' }
-      ];
-
-      const currentStatus = statusList[i % 4];
-
-      this.tableData.push({
-        indentNo: `IND-2025-${1000 + i}`,
-        division: i % 2 === 0 ? 'ASRA' : 'AURUM',
-        code: 14000000 + i,
-        description: `Sample Material Description ${i}`,
-        plant: 5000 + (i % 10),
-        type: i % 2 === 0 ? 'FERT' : 'ZPCC',
-        qty: Math.floor(Math.random() * 400) + 50,
-
-        // 🔥 added status + statusText
-        status: currentStatus.status,
-        statusText: currentStatus.statusText,
-
-        reqDate: '03 Nov, 2025'
-      });
-
-      i++;
-    }
-
-    this.totalRecords = this.tableData.length;
-  }
-
-  applyPagination() {
-    this.totalPages = Math.ceil(this.totalRecords / this.pageSize);
-
-    const start = (this.currentPage - 1) * this.pageSize;
-    const end = start + this.pageSize;
-
-    this.paginatedData = this.tableData.slice(start, end);
-
-    this.startIndex = start + 1;
-    this.endIndex = Math.min(end, this.totalRecords);
+    this.divisionMaster();
   }
 
   changePage(page: number) {
@@ -122,16 +78,16 @@ export class ManagerListComponent {
       this.currentPage,
       this.fromDate,
       this.toDate,
-      this.selectedDivisionId
+      this.selectedDivisionId,
+      this.selectedStatusId
     );
   }
 
+
   manageById(id: any) {
-    this.router.navigate(['/manager/detail', id]);
-    this.coreService.displayToast({
-      type: 'success',
-      message: `Managing Indent with ID: ${id}`
-    });
+    const encodedOnce = btoa(id.toString());
+    const encodedTwice = btoa(encodedOnce);
+    this.router.navigate(['/manager/detail', encodedTwice]);
   }
 
   // onDateChange(from: string, to: string) {
@@ -163,9 +119,6 @@ export class ManagerListComponent {
     this.resetAndLoad();
   }
 
-  /**
-   * Called when To Date changes
-   */
   onToDateChange(to: string) {
     if (!this.fromDate) {
       this.dateError = 'Please select From Date first';
@@ -189,11 +142,14 @@ export class ManagerListComponent {
     const division = Number((event.target as HTMLSelectElement).value);
     this.selectedDivisionId = division;
     this.resetAndLoad();
-    this.coreService.displayToast({
-      type: 'success',
-      message: `need to call list api with ${division}`
-    })
   }
+
+   onStatusChange(event: Event) {
+    const status = Number((event.target as HTMLSelectElement).value);
+    this.selectedStatusId = status;
+    this.resetAndLoad();
+  }
+
 
   private resetAndLoad() {
     this.currentPage = 1;
@@ -201,7 +157,8 @@ export class ManagerListComponent {
       this.currentPage,
       this.fromDate,
       this.toDate,
-      this.selectedDivisionId
+      this.selectedDivisionId,
+      this.selectedStatusId
     );
   }
 
@@ -209,14 +166,16 @@ export class ManagerListComponent {
     pageNumber: number,
     fromDate: string | null,
     toDate: string | null,
-    division: number | null
+    divisionId: number | null,
+    statusId: number | null,
   ) {
     const payload = {
       userId: this.userDetail?.id ? this.userDetail?.id : null,
       pageNumber,
-      division,
+      divisionId,
       fromDate,
-      toDate
+      toDate,
+      statusId
     };
     console.log("payload : ", payload);
 
@@ -231,15 +190,14 @@ export class ManagerListComponent {
         this.totalPages = Math.ceil(this.totalRecords / this.pageSize);
 
         this.startIndex = (this.currentPage - 1) * this.pageSize + 1;
-        this.endIndex = Math.min(
-          this.currentPage * this.pageSize,
-          this.totalRecords
-        );
+        this.endIndex = Math.min(this.currentPage * this.pageSize, this.totalRecords);
 
+        // Get table keys and filter out 'S.NO'
         this.tableKeys = this.managerRequestList.length
-          ? Object.keys(this.managerRequestList[0])
+          ? Object.keys(this.managerRequestList[0]).filter(key => key !== 'S.NO')
           : [];
       },
+
 
       error: (err: HttpErrorResponse) => {
         console.error('API Error:', err);
@@ -251,12 +209,24 @@ export class ManagerListComponent {
     if (
       (this.fromDate && this.fromDate !== '') ||
       (this.toDate && this.toDate !== '') ||
-      (this.selectedDivisionId !== null)
+      (this.selectedDivisionId !== null) ||
+      (this.selectedStatusId !== null)
     ) {
       window.location.reload();
     }
   }
 
+  divisionMaster() {
+    this.masterService.divisionsMaster(this.userId, 'M').subscribe({
+      next: (res: any) => {
+        console.log("division masters : ", res);
+        this.divisionList = res;
+      },
+      error: (err: HttpErrorResponse) => {
+        console.log("error : ", err)
+      }
+    })
+  }
 
 }
 

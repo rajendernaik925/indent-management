@@ -56,11 +56,11 @@
     </div>
 
   </div>
-<!-- <hr class="gradient-hr p-0 m-0"> -->
+  <!-- <hr class="gradient-hr p-0 m-0"> -->
 
 
   <!-- --- Component.html --- -->
-  <div class="ios-tab-container mt-1">
+  <!-- <div class="ios-tab-container mt-1">
     <div class="ios-tab-slider"></div>
 
     <div class="ios-tab" [class.active]="selectedStatus === 'dashboard'" routerLink="dashboard"
@@ -85,6 +85,15 @@
 
     <div class="ios-tab" [class.active]="selectedStatus === 'hod'" routerLink="hod-approvals" (click)="setActiveTab('hod')">
       HOD Approvals
+    </div>
+  </div> -->
+
+
+  <div class="ios-tab-container mt-1">
+    <div class="ios-tab-slider"></div>
+    <div class="ios-tab" *ngFor="let tab of tabs" [class.active]="selectedStatus === tab.key" [routerLink]="tab.route"
+      (click)="setActiveTab(tab.key)">
+      {{ tab.label }}
     </div>
   </div>
 

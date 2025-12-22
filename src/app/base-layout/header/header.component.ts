@@ -30,7 +30,13 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   userAccess: any;
   selectedStatus: TabStatus = 'dashboard';
 
-
+  tabs: { label: string; route: string; key: TabStatus }[] = [
+    { label: 'Dashboard', route: 'dashboard', key: 'dashboard' },
+    { label: 'Indent Requests', route: 'employee', key: 'employee' },
+    { label: 'Manager Approvals', route: 'manager', key: 'manager' },
+    { label: 'Purchase Approvals', route: 'purchase', key: 'purchase' },
+    { label: 'HOD Approvals', route: 'hod-approvals', key: 'hod' }
+  ];
 
   private router: Router = inject(Router);
   private coreService: CoreService = inject(CoreService);
@@ -88,6 +94,8 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     this.selectedStatus = status;
     this.updateSlider();
   }
+
+
 
   logout() {
     Swal.fire({

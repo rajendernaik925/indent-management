@@ -6,6 +6,14 @@ import { CommonModule } from '@angular/common';
 import * as bootstrap from 'bootstrap';
 import { COMMON_EXPORTS } from '../../../core/common-exports.constants';
 import { Tooltip } from 'bootstrap';
+import { managerService } from '../manager.service';
+import { HttpErrorResponse } from '@angular/common/http';
+import Swal from 'sweetalert2';
+import { commonService } from '../../common.service';
+import { DomSanitizer } from '@angular/platform-browser';
+import { SettingsService } from '../../../core/services/settings.service';
+import { use } from 'echarts';
+import { SharedModule } from "../../../shared/shared-modules";
 
 @Component({
   selector: 'app-manager-manage',
@@ -13,21 +21,36 @@ import { Tooltip } from 'bootstrap';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    COMMON_EXPORTS   // ✅ REQUIRED for formControlName, *ngIf
-  ],
+    COMMON_EXPORTS,
+    SharedModule
+],
   templateUrl: './manager-manage.component.html',
   styleUrl: './manager-manage.component.scss'
 })
 export class ManagerManageComponent implements OnInit, AfterViewInit {
 
-  Id: string | null = null;
+  Id: number | null = null;
   quantityForm: FormGroup;
   priceChangeForm: FormGroup;
   vendorChangeForm: FormGroup;
   statusForm: FormGroup;
+  indentDetailsData: any;
+  userDetail: any;
+  userId: any;
+  userAccess: any;
+  pdfFiles: { name: string; url: string }[] = [];
+  selectedFileUrl: any = null; // For iframe display
+  showPDF = false;
+  selectedFileIndex: number = 0;
+  indentId: any
+
 
   private route = inject(ActivatedRoute);
   private coreService = inject(CoreService);
+  private commonService: commonService = inject(commonService);
+  private managerService: managerService = inject(managerService);
+  private sanitizer: DomSanitizer = inject(DomSanitizer);
+  private settingService: SettingsService = inject(SettingsService);
 
   constructor(private fb: FormBuilder) {
 
@@ -46,6 +69,7 @@ export class ManagerManageComponent implements OnInit, AfterViewInit {
 
     // vendor form
     this.vendorChangeForm = this.fb.group({
+      requested: [{ value: '', disabled: true }],
       newVendor: ['', [Validators.required, Validators.minLength(2)]],
       comment: ['', [Validators.required, Validators.minLength(2)]]
     });
@@ -58,11 +82,37 @@ export class ManagerManageComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-    this.Id = this.route.snapshot.paramMap.get('id');
-    console.log('Received ID:', this.Id);
+    const encodedId = this.route.snapshot.paramMap.get('id');
+    if (encodedId) {
+      const decodedOnce = atob(encodedId);
+      const decodedTwice = atob(decodedOnce);
+      this.Id = Number(decodedTwice);
+      console.log('Final Decoded ID:', this.Id);
+    }
+
+    const employee = this.settingService.employeeInfo();
+    this.userDetail = employee;
+    this.userId = this.userDetail?.id
+    const employeeAccess = this.settingService.moduleAccess();
+    this.userAccess = employeeAccess;
+
+    this.indentDetails();
   }
 
-   ngAfterViewInit() {
+  indentDetails() {
+    this.commonService.indentDetails(this.Id).subscribe({
+      next: (res: any) => {
+        console.log("indent details : ", res);
+        const parsedRes = typeof res === 'string' ? JSON.parse(res) : res;
+        this.indentDetailsData = parsedRes;
+      },
+      error: (err: HttpErrorResponse) => {
+        console.log("error : ", err)
+      }
+    })
+  }
+
+  ngAfterViewInit() {
     const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     tooltipTriggerList.forEach((tooltipTriggerEl: any) => {
       new Tooltip(tooltipTriggerEl);
@@ -73,7 +123,8 @@ export class ManagerManageComponent implements OnInit, AfterViewInit {
     window.history.back();
   }
 
-  updateAndSave() {
+  updateAndSave(indentId: any) {
+    this.indentId = indentId;
     const element = document.getElementById('updateStatusOffcanvas');
     if (element) {
       const offcanvas = new bootstrap.Offcanvas(element);
@@ -81,7 +132,11 @@ export class ManagerManageComponent implements OnInit, AfterViewInit {
     }
   }
 
-  quantity() {
+  quantity(qnty: any) {
+    console.log("quantity : ", qnty);
+    this.quantityForm.patchValue({
+      requested: qnty
+    });
     const element = document.getElementById('offcanvasQuantity');
     if (element) {
       const offcanvas = new bootstrap.Offcanvas(element);
@@ -97,7 +152,11 @@ export class ManagerManageComponent implements OnInit, AfterViewInit {
     }
   }
 
-  vendorOffCanvas() {
+  vendorOffCanvas(vendor:any) {
+    console.log("vendor : ", vendor);
+    this.vendorChangeForm.patchValue({
+      requested: vendor
+    });
     const element = document.getElementById('offcanvasVendor');
     if (element) {
       const offcanvas = new bootstrap.Offcanvas(element);
@@ -115,7 +174,9 @@ export class ManagerManageComponent implements OnInit, AfterViewInit {
     const payload = {
       requested: this.quantityForm.get('requested')?.value,
       newQty: this.quantityForm.value.newQty,
-      comment: this.quantityForm.value.comment
+      comment: this.quantityForm.value.comment,
+      userId: this.userId,
+      indentId: this.Id
     };
 
     console.log('Updated Data:', payload);
@@ -126,8 +187,8 @@ export class ManagerManageComponent implements OnInit, AfterViewInit {
       if (canvas) canvas.hide();
     }
     this.coreService.displayToast({
-      type: 'success',
-      message: 'Quantity updated successfully.'
+      type: 'error',
+      message: 'Backend processing is currently in progress.'
     });
 
   }
@@ -169,8 +230,11 @@ export class ManagerManageComponent implements OnInit, AfterViewInit {
     }
 
     const updatedData = {
+      requested: this.vendorChangeForm.get('requested')?.value,
       newVendor: this.vendorChangeForm.value.newVendor,
-      comment: this.vendorChangeForm.value.comment
+      comment: this.vendorChangeForm.value.comment,
+      userId: this.userId,
+      indentId: this.Id
     };
 
     console.log('Updated Vendor:', updatedData);
@@ -185,8 +249,8 @@ export class ManagerManageComponent implements OnInit, AfterViewInit {
       if (canvas) canvas.hide();
     }
     this.coreService.displayToast({
-      type: 'success',
-      message: 'Vendor updated successfully.'
+      type: 'error',
+      message: 'Backend processing is currently in progress.'
     });
   }
 
@@ -198,20 +262,150 @@ export class ManagerManageComponent implements OnInit, AfterViewInit {
 
     const formData = {
       status: this.statusForm.value.status,
-      comment: this.statusForm.value.comment
+      comments: this.statusForm.value.comment,
+      indentId: this.indentId,
+      userId: this.userId
     };
 
     console.log('Status Submitted:', formData);
     // Call your service to save the status
     // this.yourService.updateStatus(formData).subscribe(...)
+
+    this.managerService.updateIndentStatus(formData).subscribe({
+      next: (res: any) => {
+        this.coreService.displayToast({
+          type: 'success',
+          message: res
+        });
+
+        this.indentDetails();
+      },
+      error: (err: any) => {
+        this.coreService.displayToast({
+          type: 'error',
+          message: err
+        });
+      }
+    });
     const element = document.getElementById('updateStatusOffcanvas');
     if (element) {
       const canvas = bootstrap.Offcanvas.getInstance(element);
       if (canvas) canvas.hide();
     }
-    this.coreService.displayToast({
-      type: 'success',
-      message: 'Status updated successfully.'
+  }
+
+  viewFile() {
+    this.commonService.indentFiles(this.Id).subscribe({
+      next: (res: any) => {
+        this.pdfFiles = Object.keys(res).map(key => ({
+          name: key,
+          url: res[key]
+        }));
+
+        if (this.pdfFiles.length > 0) {
+          // convert base64 to blob URL
+          const byteCharacters = atob(this.pdfFiles[0].url);
+          const byteNumbers = new Array(byteCharacters.length)
+            .fill(0)
+            .map((_, i) => byteCharacters.charCodeAt(i));
+          const byteArray = new Uint8Array(byteNumbers);
+          const blob = new Blob([byteArray], { type: 'application/pdf' });
+
+          this.selectedFileUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
+            URL.createObjectURL(blob)
+          );
+          this.showPDF = true;
+        }
+      },
+      error: () => {
+        this.coreService.displayToast({
+          type: 'error',
+          message: 'Failed to load files'
+        });
+      }
+    });
+  }
+
+  // When radio changes
+  onFileChange(index: number) {
+    const file = this.pdfFiles[index].url;
+    const byteCharacters = atob(file);
+    const byteNumbers = new Array(byteCharacters.length)
+      .fill(0)
+      .map((_, i) => byteCharacters.charCodeAt(i));
+    const byteArray = new Uint8Array(byteNumbers);
+    const blob = new Blob([byteArray], { type: 'application/pdf' });
+
+    this.selectedFileUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
+      URL.createObjectURL(blob)
+    );
+    this.selectedFileIndex = index;
+  }
+
+
+  // Close overlay
+  closePDF() {
+    this.showPDF = false;
+  }
+
+
+
+  removeMaterial(id: any) {
+    Swal.fire({
+      title: 'Enter your comments',
+      input: 'textarea',
+      inputPlaceholder: 'Type your comments here...',
+      inputAttributes: {
+        maxlength: '500', // max 500 characters
+        minlength: '2',   // min 2 characters (validation in inputValidator)
+        autocapitalize: 'off',
+        autocorrect: 'off'
+      },
+      showCancelButton: true,
+      confirmButtonText: 'Submit',
+      cancelButtonText: 'Cancel',
+      inputValidator: (value) => {
+        if (!value) {
+          return 'Comments cannot be empty';
+        }
+        if (value.length < 2) {
+          return 'Minimum 2 characters required';
+        }
+        if (value.length > 500) {
+          return 'Maximum 500 characters allowed';
+        }
+        return null;
+      },
+      customClass: {
+        popup: 'swal2-popup-custom' // optional: for extra styling
+      }
+    }).then((result) => {
+      if (result.isConfirmed && result.value) {
+        const payload = {
+          materialId: id,
+          userId: this.userId,
+          comments: result.value
+        };
+
+        console.log('Payload:', payload);
+
+        // Call API
+        this.managerService.removeMaterial(payload).subscribe({
+          next: (res: any) => {
+            this.coreService.displayToast({
+              type: 'success',
+              message: res
+            });
+            this.indentDetails();
+          },
+          // error: (err: any) => {
+          //   this.coreService.displayToast({
+          //     type: 'error',
+          //     message: 'Something went wrong'
+          //   });
+          // }
+        });
+      }
     });
   }
 }

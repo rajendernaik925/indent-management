@@ -7,7 +7,7 @@ import { SharedModule } from '../../../shared/shared-modules';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { SettingsService } from '../../../core/services/settings.service';
-import { moduleService } from '../../module.service';
+import { masterService } from '../../master.service';
 import { employeeService } from '../employee.service';
 import { debounceTime, Subject } from 'rxjs';
 // interface Material {
@@ -47,8 +47,8 @@ export class EmployeeListComponent implements OnInit {
   userDetail: any;
   userId: any;
   userAccess: any;
-  plantId!: number;
-  materialTypeId!: number;
+  plantId: number | null = null;
+  materialTypeId: number | null = null;
   selectedStatus: string = 'all';
   showList = false;
   materialType: any[] = [];
@@ -66,13 +66,14 @@ export class EmployeeListComponent implements OnInit {
   fromDate: string | null = null;
   toDate: string | null = null;
   searchInputValue: string = '';
+  private materialSearchTimer: any;
 
 
   private coreService: CoreService = inject(CoreService);
   private router: Router = inject(Router);
   private settingService: SettingsService = inject(SettingsService);
   private fb: FormBuilder = inject(FormBuilder);
-  private moduleService: moduleService = inject(moduleService);
+  private masterService: masterService = inject(masterService);
   private employeeService: employeeService = inject(employeeService);
 
   constructor(private http: HttpClient) {
@@ -109,20 +110,32 @@ export class EmployeeListComponent implements OnInit {
 
   }
 
+  // createMaterialForm(): FormGroup {
+  //   return this.fb.group({
+  //     plant: ['', Validators.required],
+  //     materialType: ['', Validators.required],
+  //     material: ['', Validators.required],
+  //     materialId: [null],
+  //     qty: ['', Validators.required],
+  //     deliveryDate: ['', Validators.required],
+  //     reason: ['', Validators.required],
+  //   });
+  // }
+
   createMaterialForm(): FormGroup {
     return this.fb.group({
       plant: ['', Validators.required],
       materialType: ['', Validators.required],
-      material: ['', Validators.required],
+      materialText: ['', Validators.required], // user sees this
+      material: [null, Validators.required],   // store Sno here
       qty: ['', Validators.required],
       deliveryDate: ['', Validators.required],
       reason: ['', Validators.required],
-
-      // For dropdown handling per row
-      filteredMaterials: [[]],
-      showList: [false]
+      showList: [false],                        // control dropdown visibility
+      filteredMaterials: [[]]                    // store search results for this row
     });
   }
+
 
   get materialsArray(): FormArray {
     return this.requestForm.get('materials') as FormArray;
@@ -148,6 +161,8 @@ export class EmployeeListComponent implements OnInit {
       this.fromDate,
       this.toDate
     );
+
+    this.budgetValidation();
   }
 
 
@@ -228,15 +243,14 @@ export class EmployeeListComponent implements OnInit {
         this.totalPages = Math.ceil(this.totalRecords / this.pageSize);
 
         this.startIndex = (this.currentPage - 1) * this.pageSize + 1;
-        this.endIndex = Math.min(
-          this.currentPage * this.pageSize,
-          this.totalRecords
-        );
+        this.endIndex = Math.min(this.currentPage * this.pageSize, this.totalRecords);
 
+        // Get table keys and filter out 'S.NO'
         this.tableKeys = this.indentRequestList.length
-          ? Object.keys(this.indentRequestList[0])
+          ? Object.keys(this.indentRequestList[0]).filter(key => key !== 'S.NO')
           : [];
       },
+
 
       error: (err: HttpErrorResponse) => {
         console.error('API Error:', err);
@@ -257,6 +271,7 @@ export class EmployeeListComponent implements OnInit {
 
   submitRequest() {
     if (this.requestForm.invalid) {
+      console.log("formvalue : ", this.requestForm.value)
       this.requestForm.markAllAsTouched();
       this.coreService.displayToast({
         type: 'error',
@@ -310,7 +325,15 @@ export class EmployeeListComponent implements OnInit {
           message: res
         });
         this.visible = false;
+        this.plantId = null;
+        this.materialTypeId = null;
         this.resetMaterialsForm();
+        this.callListAPI(
+          this.currentPage,
+          this.searchInputValue,
+          this.fromDate,
+          this.toDate
+        );
       },
       error: (err) => {
         console.error('API Error:', err);
@@ -405,15 +428,7 @@ export class EmployeeListComponent implements OnInit {
     this.router.navigate(['/employee/detail', encodedTwice]);
   }
 
-  selectMaterial(index: number, m: any) {
-    const group = this.materialsArray.at(index) as FormGroup;
 
-    group.patchValue({
-      material: m.code,
-      materialText: `${m.code} - ${m.name}`,
-      showList: false
-    });
-  }
 
   onBlurMaterial(index: number) {
     const group = this.materialsArray.at(index) as FormGroup;
@@ -477,7 +492,7 @@ export class EmployeeListComponent implements OnInit {
       search: ''
     };
 
-    this.moduleService.materialsMaster(payload).subscribe({
+    this.masterService.materialsMaster(payload).subscribe({
       next: (res) => {
         console.log('matrails Response:', res);
         this.materials = res;
@@ -500,7 +515,7 @@ export class EmployeeListComponent implements OnInit {
       return;
     }
 
-    this.moduleService.divisionsMaster(this.userDetail.id, 'I').subscribe({
+    this.masterService.divisionsMaster(this.userDetail.id, 'I').subscribe({
       next: (res: any) => {
         this.divisions = res;
       },
@@ -511,7 +526,7 @@ export class EmployeeListComponent implements OnInit {
   }
 
   plantsMaster() {
-    this.moduleService.plantsMaster().subscribe({
+    this.masterService.plantsMaster().subscribe({
       next: (res: any) => {
         this.plants = res;
       },
@@ -522,7 +537,7 @@ export class EmployeeListComponent implements OnInit {
   }
 
   materialTypesMaster() {
-    this.moduleService.materialTypesMaster().subscribe({
+    this.masterService.materialTypesMaster().subscribe({
       next: (res: any) => {
         this.materialType = res;
       },
@@ -583,7 +598,7 @@ export class EmployeeListComponent implements OnInit {
 
     this.dateError = null;
 
-    this.resetAndLoad(); 
+    this.resetAndLoad();
 
     // if (!this.searchError && (this.searchInputValue?.length >= 3 || !this.searchInputValue)) {
     //   this.resetAndLoad();   // ✅ RESET PAGE
@@ -609,5 +624,128 @@ export class EmployeeListComponent implements OnInit {
   }
 
 
+  // onSearch(index: number) {
+  //   const group = this.materialsArray.at(index) as FormGroup;
+  //   const searchValue = group.get('materialText')?.value;
+  //   console.log("search value : ", searchValue)
+
+  //   if (!searchValue) {
+  //     group.patchValue({ filteredMaterials: [], material: null });
+  //     group.get('showList')?.setValue(false);
+  //     return;
+  //   }
+
+  //   if (this.plantId && this.materialTypeId) {
+  //     const payload = {
+  //       plant: this.plantId,
+  //       materialType: this.materialTypeId,
+  //       search: searchValue
+  //     };
+  //     this.masterService.materialsMaster(payload).subscribe((res: any) => {
+  //       group.patchValue({ filteredMaterials: res });
+  //       group.get('showList')?.setValue(res.length > 0);
+  //     });
+  //   } else {
+  //     this.coreService.displayToast({
+  //       type: 'error',
+  //       message: 'Please select plant and material'
+  //     });
+  //     group.patchValue({ materialText: '', material: null, filteredMaterials: [] });
+  //     group.get('showList')?.setValue(false);
+  //   }
+  // }
+
+  // Called when user selects a material from dropdown
+
+
+  onSearch(index: number) {
+    const group = this.materialsArray.at(index) as FormGroup;
+    const searchValue = group.get('materialText')?.value;
+
+    console.log('search value : ', searchValue);
+
+    // Clear previous timer
+    if (this.materialSearchTimer) {
+      clearTimeout(this.materialSearchTimer);
+    }
+
+    // If empty input
+    if (!searchValue) {
+      group.patchValue({ filteredMaterials: [], material: null });
+      group.get('showList')?.setValue(false);
+      return;
+    }
+
+    // Set debounce timeout (400ms)
+    this.materialSearchTimer = setTimeout(() => {
+      if (this.plantId && this.materialTypeId) {
+        const payload = {
+          plant: this.plantId,
+          materialType: this.materialTypeId,
+          search: searchValue
+        };
+
+        this.masterService.materialsMaster(payload).subscribe((res: any) => {
+          group.patchValue({ filteredMaterials: res });
+          group.get('showList')?.setValue(res.length > 0);
+        });
+
+      } else {
+        this.coreService.displayToast({
+          type: 'error',
+          message: 'Please select plant and material'
+        });
+
+        group.patchValue({
+          materialText: '',
+          material: null,
+          filteredMaterials: []
+        });
+        group.get('showList')?.setValue(false);
+      }
+    }, 400);
+  }
+
+  selectMaterial(index: number, material: any) {
+    const group = this.materialsArray.at(index) as FormGroup;
+    group.patchValue({
+      materialText: material.Material,
+      material: material.Sno,
+      showList: false,
+      filteredMaterials: []
+    });
+  }
+
+  budgetToastShown = false;
+
+  budgetValidation() {
+    this.requestForm.valueChanges
+      .pipe(debounceTime(400)) // prevents spamming
+      .subscribe(() => {
+
+        const planned = this.requestForm.get('plannedBudget');
+        const estimated = this.requestForm.get('estimatedBudget');
+
+        if (!planned || !estimated) return;
+
+        if (
+          planned.value &&
+          estimated.value &&
+          Number(planned.value) <= Number(estimated.value)
+        ) {
+          if (!this.budgetToastShown) {
+            this.coreService.displayToast({
+              type: 'error',
+              message: 'Planned Budget must be greater than Estimated Budget'
+            });
+            this.budgetToastShown = true;
+          }
+        } else {
+          // reset when condition becomes valid
+          this.budgetToastShown = false;
+        }
+
+      });
+  }
 }
 

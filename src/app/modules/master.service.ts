@@ -8,25 +8,10 @@ import { catchError, Observable, throwError } from "rxjs";
     providedIn: 'root'
 })
 
-export class moduleService {
+export class masterService {
 
     private coreService: CoreService = inject(CoreService);
     private http: HttpClient = inject(HttpClient);
-
-    // private handleError = (error: HttpErrorResponse): Observable<never> => {
-    //     console.log("error : ",error)
-    //     let errorMessage = '';
-    //     if (error.status === 0) {
-    //         errorMessage = error.error.message;
-    //     } else {
-    //         errorMessage = error.error;
-    //     }
-    //     this.coreService?.displayToast({
-    //         type: 'error',
-    //         message: `${errorMessage}`,
-    //     });
-    //     return throwError(() => errorMessage);
-    // }
 
     private handleError = (error: HttpErrorResponse): Observable<never> => {
         console.error('API Error:', error);

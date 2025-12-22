@@ -1,35 +1,32 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { IPageInfo } from '../../../core/modals/page';
 
 @Component({
   selector: 'app-paginator',
   standalone: true,
-  imports: [
-    CommonModule,
-  ],
+  imports: [CommonModule,],
   templateUrl: './paginator.component.html',
   styleUrl: './paginator.component.scss'
 })
+export class PaginatorComponent implements OnInit {
 
-export class PaginatorComponent {
-  @Input() pageInfo: IPageInfo = {
-    count: 0,
-    page: 0,
-    limit: 0,
-    page_count: 0,
-    next_page: false,
-    prev_page: false,
+  ngOnInit(): void {
+    console.log("rajender")
   }
-  @Output('page') page: EventEmitter<number> = new EventEmitter(false);
+
+  @Input() pageInfo!: IPageInfo;
+  @Output() pageChange = new EventEmitter<number>();
 
   nextPage() {
-    const page = this.pageInfo.page && this.pageInfo.page + 1;
-    this.page.emit(page);
+    if (this.pageInfo.next_page) {
+      this.pageChange.emit(this.pageInfo.page + 1);
+    }
   }
 
   prevPage() {
-    const page = this.pageInfo.page && this.pageInfo.page - 1;
-    this.page.emit(page);
+    if (this.pageInfo.prev_page) {
+      this.pageChange.emit(this.pageInfo.page - 1);
+    }
   }
 }

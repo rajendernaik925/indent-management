@@ -1,4 +1,4 @@
-export const projectName = 'indent-management';
+export const projectName = 'Indent Management';
 
 export const authUrls = {
   login: '/userlogin',
@@ -11,23 +11,30 @@ export const masterUrls = {
   materials: '/master/search/material',
 };
 
-
 export const employeeUrls = {
-  raiseIndentRequest:'/indent/raise',
-  indentRequestLIst:'/indent/search',
-  indentDetails:'/common/indentdetails',
-  indentFiles:'/common/files',
+  raiseIndentRequest: '/initiator/raise-indent',
+  indentRequestLIst: '/initiator/indents',
+  removeMaterial: '/initiator/material-disable'
 }
 
 export const managerUrls = {
-  managerList:'/manager/indents',
+  managerList: '/manager/indents',
+  removeMaterial: '/manager/material-disable',
+  processIndent: '/manager/process-indent'
 }
 
 export const purchaseUrls = {
-  purchaseList:'/api/job-posts',
+  purchaseList: '/manager/indents',
+  removeMaterial: '/purchase/material-disable'
 }
 
 export const hodUrls = {
-  hodList:'/api/job-posts',
+  hodList: '/manager/indents',
+  removeMaterial: '/hod/material-disable'
+}
+
+export const commonUrls = {
+  indentFiles: '/common/files',
+  indentDetails: '/common/indentdetails',
 }
 

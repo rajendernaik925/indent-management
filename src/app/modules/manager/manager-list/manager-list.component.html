@@ -40,7 +40,7 @@
     <div class="d-flex justify-content-between align-items-center mb-2">
 
       <!-- Title -->
-      <h5 class="fw-bold mb-0">Indent Request List <span class="custom-text">({{tableData.length || 0}})</span></h5>
+      <h5 class="fw-bold mb-0">Indent Request List</h5>
 
       <div class="d-flex align-items-center gap-2">
 
@@ -55,7 +55,6 @@
         <div>
           <div class="d-flex align-items-center gap-3 px-3 py-2 border rounded-pill shadow-sm bg-white">
 
-            <!-- From Date -->
             <!-- From Date -->
             <span style="font-size: 11px; font-weight: 600;">From</span>
             <input #fromDateInput type="date" class="form-control form-control-sm border-0 p-0"
@@ -75,9 +74,20 @@
             <span style="font-size: 11px; font-weight: 600;">Division</span>
             <select class="form-select form-select-sm border-0 p-0" style="font-size: 12px; height: 20px; width: 140px;"
               (change)="onDivisionChange($event)">
-              <option selected disabled>select</option>
-              <option value="1">HR</option>
-              <option value="2">IT</option>
+              <option value="">Select</option>
+              <option *ngFor="let d of divisionList" [value]="d.division_id">{{ d.division_name }}</option>
+            </select>
+
+            <div class="vr" style="height: 26px;"></div>
+
+            <!-- Status -->
+            <span style="font-size: 11px; font-weight: 600;">Status</span>
+            <select class="form-select form-select-sm border-0 p-0" style="font-size: 12px; height: 20px; width: 140px;"
+              (change)="onStatusChange($event)">
+              <option value="">Select</option>
+              <option value="1">Approved</option>
+              <option value="2">Rejected</option>
+              <option value="3">Pending</option>
             </select>
 
             <i class="bi bi-arrow-clockwise text-primary cursor-pointer thick-icon" (click)="clearFilters()"></i>

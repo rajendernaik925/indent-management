@@ -1,14 +1,14 @@
 import { CoreService } from "../../core/services/core.services";
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
-import { moduleUrls } from '../../api.constants';
 import { catchError, Observable, throwError } from "rxjs";
+import { hodUrls } from "../../api.constants";
 
 @Injectable({
   providedIn: 'root'
 })
 
-export class appliedService {
+export class hodService {
 
   private coreService: CoreService = inject(CoreService);
   private http: HttpClient = inject(HttpClient);
@@ -27,21 +27,16 @@ export class appliedService {
     return throwError(() => errorMessage);
   }
 
-  getClinics(params: any): Observable<any> {
-    return this.http.get(`${moduleUrls.clinicList}`, { params }).pipe(
+  hodRequestList(params: any): Observable<any> {
+    return this.http.post(`${hodUrls.hodList}`, params).pipe(
       catchError(this.handleError),
     );
   }
 
-  addClinic(data: any = {}): Observable<any> {
-    return this.http.post(`${moduleUrls.clinicList}`, data).pipe(
-      catchError(this.handleError),
+  removeMaterial(payload: any): Observable<any> {
+    return this.http.post(`${hodUrls.removeMaterial}`, payload, { responseType: 'text' }).pipe(
+      catchError(this.handleError)
     );
   }
 
-  updateClinic(clinicId: string, data: any = {}): Observable<any> {
-    return this.http.put(`${moduleUrls}/${clinicId}`, data).pipe(
-      catchError(this.handleError),
-    );
-  }
 }

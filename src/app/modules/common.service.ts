@@ -1,14 +1,14 @@
-import { CoreService } from "../../core/services/core.services";
+import { CoreService } from "../core/services/core.services";
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { catchError, Observable, throwError } from "rxjs";
-import { purchaseUrls } from "../../api.constants";
+import { commonUrls } from "../api.constants";
 
 @Injectable({
   providedIn: 'root'
 })
 
-export class purchaseService {
+export class commonService {
 
   private coreService: CoreService = inject(CoreService);
   private http: HttpClient = inject(HttpClient);
@@ -46,15 +46,22 @@ export class purchaseService {
     return throwError(() => error);
   };
 
-  purchaseRequestList(params: any): Observable<any> {
-    return this.http.post(`${purchaseUrls.purchaseList}`, params).pipe(
-      catchError(this.handleError),
+  indentDetails(id: any): Observable<any> {
+    return this.http.get(`${commonUrls.indentDetails}/${id}`).pipe(
+      catchError(this.handleError)
     );
   }
 
-  removeMaterial(payload: any): Observable<any> {
-      return this.http.post(`${purchaseUrls.removeMaterial}`, payload, { responseType: 'text' }).pipe(
-        catchError(this.handleError)
-      );
-    }
+  indentFiles(id: any): Observable<any> {
+    return this.http.get(`${commonUrls.indentFiles}/${id}`).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+
+  // raiseIndentRequest(formData: FormData): Observable<string> {
+  //   return this.http.post(`${employeeUrls.raiseIndentRequest}`, formData, { responseType: 'text' }).pipe(
+  //     catchError(this.handleError)
+  //   );
+  // }
 }

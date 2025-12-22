@@ -6,9 +6,10 @@ import { CommonModule } from '@angular/common';
 import { Tooltip } from 'bootstrap';
 import { employeeService } from '../employee.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { SafeUrlPipe } from '../../../shared/pipes/safe-url.pipe';
-import { SharedModule } from '../../../shared/shared-modules';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { DomSanitizer } from '@angular/platform-browser';
+import { SettingsService } from '../../../core/services/settings.service';
+import Swal from 'sweetalert2';
+import { commonService } from '../../common.service';
 
 @Component({
   selector: 'app-employee-manage',
@@ -27,12 +28,21 @@ export class EmployeeManageComponent implements OnInit, AfterViewInit {
   Id: number | null = null;
   isEdit: boolean = false;
   indentDetailsData: any;
+  userDetail: any;
+  userId: any;
+  userAccess: any;  
+  pdfFiles: { name: string; url: string }[] = [];
+  selectedFileUrl: any = null; // For iframe display
+  showPDF = false;
+  selectedFileIndex: number = 0;
 
   private fb = inject(FormBuilder);
   private route = inject(ActivatedRoute);
   private coreService = inject(CoreService);
   private employeeService: employeeService = inject(employeeService);
-  private sanitizer: DomSanitizer = inject(DomSanitizer)
+  private sanitizer: DomSanitizer = inject(DomSanitizer);
+  private settingService: SettingsService = inject(SettingsService);
+  private commonService: commonService = inject(commonService);
 
 
   ngOnInit() {
@@ -43,6 +53,12 @@ export class EmployeeManageComponent implements OnInit, AfterViewInit {
       this.Id = Number(decodedTwice);
       console.log('Final Decoded ID:', this.Id);
     }
+    const employee = this.settingService.employeeInfo();
+    this.userDetail = employee;
+    this.userId = this.userDetail?.id
+    const employeeAccess = this.settingService.moduleAccess();
+    this.userAccess = employeeAccess;
+
     this.indentDetails();
   }
 
@@ -55,7 +71,7 @@ export class EmployeeManageComponent implements OnInit, AfterViewInit {
   }
 
   indentDetails() {
-    this.employeeService.indentDetails(this.Id).subscribe({
+    this.commonService.indentDetails(this.Id).subscribe({
       next: (res: any) => {
         console.log("indent details : ", res);
         const parsedRes = typeof res === 'string' ? JSON.parse(res) : res;
@@ -71,32 +87,27 @@ export class EmployeeManageComponent implements OnInit, AfterViewInit {
     window.history.back();
   }
 
-
-
-  pdfFiles: { name: string; url: string }[] = [];
-  selectedFileUrl!: SafeResourceUrl;
-
   viewFile() {
-    this.coreService.displayToast({
-      type: 'success',
-      message: 'Fetching files...'
-    });
-
-    this.employeeService.indentFiles(this.Id).subscribe({
+    this.commonService.indentFiles(this.Id).subscribe({
       next: (res: any) => {
-        console.log('file data:', res);
-
         this.pdfFiles = Object.keys(res).map(key => ({
           name: key,
           url: res[key]
         }));
 
         if (this.pdfFiles.length > 0) {
-          // 🔥 sanitize first file URL
-          this.selectedFileUrl =
-            this.sanitizer.bypassSecurityTrustResourceUrl(
-              this.pdfFiles[0].url
-            );
+          // convert base64 to blob URL
+          const byteCharacters = atob(this.pdfFiles[0].url);
+          const byteNumbers = new Array(byteCharacters.length)
+            .fill(0)
+            .map((_, i) => byteCharacters.charCodeAt(i));
+          const byteArray = new Uint8Array(byteNumbers);
+          const blob = new Blob([byteArray], { type: 'application/pdf' });
+
+          this.selectedFileUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
+            URL.createObjectURL(blob)
+          );
+          this.showPDF = true;
         }
       },
       error: () => {
@@ -108,12 +119,91 @@ export class EmployeeManageComponent implements OnInit, AfterViewInit {
     });
   }
 
+  // When radio changes
+  onFileChange(index: number) {
+    const file = this.pdfFiles[index].url;
+    const byteCharacters = atob(file);
+    const byteNumbers = new Array(byteCharacters.length)
+      .fill(0)
+      .map((_, i) => byteCharacters.charCodeAt(i));
+    const byteArray = new Uint8Array(byteNumbers);
+    const blob = new Blob([byteArray], { type: 'application/pdf' });
 
-  // called when radio button changes
-  onFileChange(url: string) {
-    this.selectedFileUrl =
-      this.sanitizer.bypassSecurityTrustResourceUrl(url);
+    this.selectedFileUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
+      URL.createObjectURL(blob)
+    );
+    this.selectedFileIndex = index;
   }
+
+
+  // Close overlay
+  closePDF() {
+    this.showPDF = false;
+  }
+
+
+
+  removeMaterial(id: any) {
+    Swal.fire({
+      title: 'Enter your comments',
+      input: 'textarea',
+      inputPlaceholder: 'Type your comments here...',
+      inputAttributes: {
+        maxlength: '500', // max 500 characters
+        minlength: '2',   // min 2 characters (validation in inputValidator)
+        autocapitalize: 'off',
+        autocorrect: 'off'
+      },
+      showCancelButton: true,
+      confirmButtonText: 'Submit',
+      cancelButtonText: 'Cancel',
+      inputValidator: (value) => {
+        if (!value) {
+          return 'Comments cannot be empty';
+        }
+        if (value.length < 2) {
+          return 'Minimum 2 characters required';
+        }
+        if (value.length > 500) {
+          return 'Maximum 500 characters allowed';
+        }
+        return null;
+      },
+      customClass: {
+        popup: 'swal2-popup-custom' // optional: for extra styling
+      }
+    }).then((result) => {
+      if (result.isConfirmed && result.value) {
+        const payload = {
+          materialId: id,
+          userId: this.userId,
+          comments: result.value
+        };
+
+        console.log('Payload:', payload);
+
+        // Call API
+        this.employeeService.removeMaterial(payload).subscribe({
+          next: (res: any) => {
+            this.coreService.displayToast({
+              type: 'success',
+              message: res
+            });
+            this.indentDetails();
+          },
+          // error: (err: any) => {
+          //   this.coreService.displayToast({
+          //     type: 'error',
+          //     message: 'Something went wrong'
+          //   });
+          // }
+        });
+      }
+    });
+  }
+
+
+
 
 
 

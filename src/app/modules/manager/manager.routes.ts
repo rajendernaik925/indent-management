@@ -1,5 +1,5 @@
 import { Route } from "@angular/router";
-import { ListComponent } from "../applied/list/list.component";
+import { ManagerListComponent } from "./manager-list/manager-list.component";
 
 export const Routes: Route[] = [
   {
@@ -12,7 +12,7 @@ export const Routes: Route[] = [
   },
   {
     path: 'employee',
-    component: ListComponent,
+    component: ManagerListComponent,
   },
   {
     path: '',
