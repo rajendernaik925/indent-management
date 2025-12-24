@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, OnInit, inject } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CoreService } from '../../../core/services/core.services';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -23,7 +23,7 @@ import { SharedModule } from "../../../shared/shared-modules";
     ReactiveFormsModule,
     COMMON_EXPORTS,
     SharedModule
-],
+  ],
   templateUrl: './manager-manage.component.html',
   styleUrl: './manager-manage.component.scss'
 })
@@ -42,7 +42,8 @@ export class ManagerManageComponent implements OnInit, AfterViewInit {
   selectedFileUrl: any = null; // For iframe display
   showPDF = false;
   selectedFileIndex: number = 0;
-  indentId: any
+  indentId: any;
+  writeAccess: boolean = false;
 
 
   private route = inject(ActivatedRoute);
@@ -51,6 +52,7 @@ export class ManagerManageComponent implements OnInit, AfterViewInit {
   private managerService: managerService = inject(managerService);
   private sanitizer: DomSanitizer = inject(DomSanitizer);
   private settingService: SettingsService = inject(SettingsService);
+  private router: Router = inject(Router);
 
   constructor(private fb: FormBuilder) {
 
@@ -95,6 +97,12 @@ export class ManagerManageComponent implements OnInit, AfterViewInit {
     this.userId = this.userDetail?.id
     const employeeAccess = this.settingService.moduleAccess();
     this.userAccess = employeeAccess;
+
+    const managerModule = this.userAccess.find(
+      (m: { moduleId: number }) => m.moduleId === 3
+    );
+     this.writeAccess = managerModule ? managerModule.canWrite === true : false;
+    console.log('Manager module write access:', this.writeAccess);
 
     this.indentDetails();
   }
@@ -152,7 +160,7 @@ export class ManagerManageComponent implements OnInit, AfterViewInit {
     }
   }
 
-  vendorOffCanvas(vendor:any) {
+  vendorOffCanvas(vendor: any) {
     console.log("vendor : ", vendor);
     this.vendorChangeForm.patchValue({
       requested: vendor
@@ -263,8 +271,7 @@ export class ManagerManageComponent implements OnInit, AfterViewInit {
     const formData = {
       status: this.statusForm.value.status,
       comments: this.statusForm.value.comment,
-      indentId: this.indentId,
-      userId: this.userId
+      indentId: this.Id,
     };
 
     console.log('Status Submitted:', formData);
@@ -275,8 +282,11 @@ export class ManagerManageComponent implements OnInit, AfterViewInit {
       next: (res: any) => {
         this.coreService.displayToast({
           type: 'success',
-          message: res
+          message: 'Status updated successfully.'
         });
+
+        // Navigate back to manager list
+        this.router.navigate(['/manager']);
 
         this.indentDetails();
       },

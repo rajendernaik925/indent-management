@@ -9,26 +9,34 @@
     <div class="col-md-7 card shadow-sm border-0 rounded-4">
       <div class="d-flex align-items-center justify-content-between mx-0 mb-2">
 
-        <!-- Left side: back icon + indent ID + status badge -->
+        <!-- LEFT: Back + Indent ID + Status -->
         <div class="d-flex align-items-center">
           <i class="bi bi-chevron-left fs-4 me-2 cursor-pointer" (click)="back()"></i>
+
           <h5 class="fw-bold m-0">{{ indentDetailsData?.indentId }}</h5>
 
           <span class="badge ms-3 fw-semibold" [ngClass]="{
             'bg-success-subtle text-success': indentDetailsData?.status === 'Approved',
             'bg-danger-subtle text-danger': indentDetailsData?.status === 'Rejected',
-            'bg-warning-subtle text-warning': indentDetailsData?.status !== 'Approved' && indentDetailsData?.status !== 'Rejected'
+            'bg-warning-subtle text-warning':
+              indentDetailsData?.status !== 'Approved' &&
+              indentDetailsData?.status !== 'Rejected'
           }">
             ● {{ indentDetailsData?.status }}
           </span>
         </div>
 
-        <!-- Right side: button -->
-        <span *ngIf="indentDetailsData?.files" class="cursor-pointer text-light custom-btn small px-2 rounded-pill"
-          (click)="viewFile()">
-          View Files
-        </span>
+        <!-- RIGHT: Save button + View Files -->
+        <div class="d-flex align-items-center gap-2">
+          <button *ngIf="writeAccess" class="btn btn-sm custom-btn px-4" (click)="updateAndSave(indentDetailsData?.indentId)">
+            Process
+          </button>
 
+          <button *ngIf="indentDetailsData?.files" class="btn btn-sm btn-info text-white px-4"
+            (click)="viewFile()">
+            View Files
+          </button>
+        </div>
 
       </div>
 
@@ -265,9 +273,8 @@
       <label class="form-label mt-2">Select Status</label>
       <select formControlName="status" class="form-select">
         <option value="">Select</option>
-        <option value="approve">Approve</option>
-        <option value="reject">Reject</option>
-        <option value="pending">Pending</option>
+        <option value="1001">Approve</option>
+        <option value="1002">Reject</option>
       </select>
       <div class="text-danger small" *ngIf="statusForm.get('status')?.errors && statusForm.get('status')?.touched">
         <span *ngIf="statusForm.get('status')?.errors?.['required']">Status is required.</span>

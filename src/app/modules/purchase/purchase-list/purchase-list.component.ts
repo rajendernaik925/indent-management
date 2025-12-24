@@ -43,6 +43,7 @@ export class PurchaseListComponent implements OnInit {
   toDate: string | null = null;
   selectedDivisionId: number | null = null;
   selectedStatusId: number | null = null;
+  writeAccess: boolean = false;
 
   private coreService: CoreService = inject(CoreService);
   private router: Router = inject(Router);
@@ -56,6 +57,13 @@ export class PurchaseListComponent implements OnInit {
     this.userId = this.userDetail?.id
     const employeeAccess = this.settingService.moduleAccess();
     this.userAccess = employeeAccess;
+
+    const purchaseModule = this.userAccess.find(
+      (m: { moduleId: number }) => m.moduleId === 4
+    );
+     this.writeAccess = purchaseModule ? purchaseModule.canWrite === true : false;
+    console.log('Purchase module write access:', this.writeAccess);
+
     // this.loadIndents();
     this.callListAPI(
       this.currentPage,

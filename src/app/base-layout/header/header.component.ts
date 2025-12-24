@@ -7,8 +7,11 @@ import * as bootstrap from 'bootstrap';
 import { StorageService } from '../../core/services/storage.service';
 import { SettingsService } from '../../core/services/settings.service';
 import { filter } from 'rxjs';
+import { ModuleAccess } from '../../core/modals/access';
 
 type TabStatus = 'dashboard' | 'employee' | 'manager' | 'purchase' | 'hod';
+
+
 
 
 @Component({
@@ -27,8 +30,9 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   sideImage: string = 'images/side-image.png';
   logo: string = 'images/indent-logo.png';
   userDetail: any;
-  userAccess: any;
   selectedStatus: TabStatus = 'dashboard';
+  filteredTabs: { label: string; route: string; key: TabStatus }[] = [];
+  userAccess: ModuleAccess[] = [];
 
   tabs: { label: string; route: string; key: TabStatus }[] = [
     { label: 'Dashboard', route: 'dashboard', key: 'dashboard' },
@@ -38,20 +42,47 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     { label: 'HOD Approvals', route: 'hod-approvals', key: 'hod' }
   ];
 
+
   private router: Router = inject(Router);
   private coreService: CoreService = inject(CoreService);
   private storageService: StorageService = inject(StorageService);
   private settingService: SettingsService = inject(SettingsService);
   private el: ElementRef = inject(ElementRef)
 
+  // ngOnInit(): void {
+  //   const employee = this.settingService.employeeInfo();
+  //   this.userDetail = employee;
+
+  //   const employeeAccess = this.settingService.moduleAccess();
+  //   this.userAccess = employeeAccess;
+  //   this.updateFromUrl(this.router.url);
+
+  //   console.log('User Detail:', this.userDetail);
+  //   console.log('User Access:', this.userAccess);
+  // }
+
   ngOnInit(): void {
     const employee = this.settingService.employeeInfo();
     this.userDetail = employee;
 
-    const employeeAccess = this.settingService.moduleAccess();
-    this.userAccess = employeeAccess;
+    this.userAccess = this.settingService.moduleAccess();
+
+    this.filteredTabs = this.tabs.filter(tab => {
+      const access = this.userAccess.find(
+        (a: ModuleAccess) => a.moduleName === tab.label
+      );
+      return access?.displayInUi === true;
+    });
+
     this.updateFromUrl(this.router.url);
+
+    // console.log('User Detail:', this.userDetail);
+    // console.log('User Access:', this.userAccess);
+    // console.log('Filtered Tabs:', this.filteredTabs);
   }
+
+
+
 
   ngAfterViewInit(): void {
     this.router.events

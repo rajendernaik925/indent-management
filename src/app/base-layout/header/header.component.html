@@ -89,13 +89,27 @@
   </div> -->
 
 
-  <div class="ios-tab-container mt-1">
+  <!-- <div class="ios-tab-container mt-1">
     <div class="ios-tab-slider"></div>
     <div class="ios-tab" *ngFor="let tab of tabs" [class.active]="selectedStatus === tab.key" [routerLink]="tab.route"
       (click)="setActiveTab(tab.key)">
       {{ tab.label }}
     </div>
+  </div> -->
+  <div class="ios-tab-container mt-1">
+  <div class="ios-tab-slider"></div>
+
+  <div
+    class="ios-tab"
+    *ngFor="let tab of filteredTabs"
+    [class.active]="selectedStatus === tab.key"
+    [routerLink]="tab.route"
+    (click)="setActiveTab(tab.key)"
+  >
+    {{ tab.label }}
   </div>
+</div>
+
 
 </div>
 

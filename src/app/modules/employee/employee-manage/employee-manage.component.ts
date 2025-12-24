@@ -35,6 +35,7 @@ export class EmployeeManageComponent implements OnInit, AfterViewInit {
   selectedFileUrl: any = null; // For iframe display
   showPDF = false;
   selectedFileIndex: number = 0;
+  writeAccess: boolean = false;
 
   private fb = inject(FormBuilder);
   private route = inject(ActivatedRoute);
@@ -59,6 +60,11 @@ export class EmployeeManageComponent implements OnInit, AfterViewInit {
     const employeeAccess = this.settingService.moduleAccess();
     this.userAccess = employeeAccess;
 
+    const employeeModule = this.userAccess.find(
+      (m: { moduleId: number }) => m.moduleId === 2
+    );
+     this.writeAccess = employeeModule ? employeeModule.canWrite === true : false;
+    console.log('Employee module write access:', this.writeAccess);
     this.indentDetails();
   }
 

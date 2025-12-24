@@ -24,10 +24,10 @@
         </div>
 
         <!-- Right side: button -->
-        <span *ngIf="indentDetailsData?.files" class="cursor-pointer text-light custom-btn small px-2 rounded-pill"
-          (click)="viewFile()">
-          View Files
-        </span>
+        <button *ngIf="indentDetailsData?.files" class="btn btn-sm btn-info text-white px-4"
+            (click)="viewFile()">
+            View Files
+          </button>
 
 
       </div>

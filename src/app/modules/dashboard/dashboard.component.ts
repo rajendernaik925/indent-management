@@ -1,12 +1,11 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { COMMON_EXPORTS } from '../../core/common-exports.constants';
-import { CoreService } from '../../core/services/core.services';
-import { StorageService } from '../../core/services/storage.service';
 import { SettingsService } from '../../core/services/settings.service';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { NgxEchartsModule, NGX_ECHARTS_CONFIG } from 'ngx-echarts';
 import * as echarts from 'echarts';
+import { ModuleAccess } from '../../core/modals/access';
 
 @Component({
   selector: 'app-dashboard',
@@ -29,16 +28,15 @@ import * as echarts from 'echarts';
 })
 export class DashboardComponent implements OnInit {
 
-  indentVisible: boolean = false;
 
-   chartOption = {
+  chartOption = {
     tooltip: {
       trigger: 'item'
     },
-    legend: {
-      top: '5%',
-      left: 'center'
-    },
+    // legend: {
+    //   top: '50%',
+    //   left: 'center'
+    // },
     series: [
       {
         name: 'Indent Status',
@@ -69,93 +67,31 @@ export class DashboardComponent implements OnInit {
     ]
   };
 
-  
+  modules: ModuleAccess[] = [
+    { moduleId: 1, moduleName: 'Dashboard', displayInUi: false, canWrite: false },
+    { moduleId: 2, moduleName: 'Indent Requests', displayInUi: false, canWrite: false },
+    { moduleId: 3, moduleName: 'Manager Approvals', displayInUi: false, canWrite: false },
+    { moduleId: 4, moduleName: 'Purchase Approvals', displayInUi: false, canWrite: false },
+    { moduleId: 5, moduleName: 'HOD Approvals', displayInUi: false, canWrite: false }
+  ];
 
-  private coreService: CoreService = inject(CoreService);
   private settingService: SettingsService = inject(SettingsService);
-
-  indentForm: FormGroup = new FormGroup({
-    description: new FormControl('', [Validators.required]),
-    brand: new FormControl('', [Validators.required]),
-    cost: new FormControl('', [Validators.required]),
-    quantity: new FormControl(null, [Validators.required]),
-    materialCode: new FormControl('', [Validators.required]),
-    plant: new FormControl('', [Validators.required]),
-    remarks: new FormControl('', [Validators.required]),
-    materialType: new FormControl('', [Validators.required]),
-  });
 
   ngOnInit() {
     const employee = this.settingService.employeeInfo();
-    const employeeAccess = this.settingService.moduleAccess();
-    console.log("Employee Info in Dashboard: ", employee);
-    console.log("Employee Info Access in Dashboard: ", employeeAccess);
+    const employeeAccess: ModuleAccess[] = this.settingService.moduleAccess();
+
+    this.modules.forEach(module => {
+      const found = employeeAccess?.find(
+        access => access.moduleId === module.moduleId
+      );
+
+      module.displayInUi = found ? found.displayInUi : false;
+      module.canWrite = found ? found.canWrite : false;
+    });
+
+    // console.log("Employee Info Access in Dashboard: ", employeeAccess);
+    // console.log("Employee Info in Dashboard: ", employee);
   }
-  routeEmployeeModule() {
-    this.coreService.displayToast({
-      type: 'success',
-      message: 'Welcome to Indent Management Rajender'
-    })
-  }
-
-  welcomeToast() {
-    this.coreService.displayToast({
-      type: 'success',
-      message: 'Welcome to Indent Management Rajender'
-    })
-  }
-
-  newIndent() {
-    this.indentVisible = true;
-  }
-
-  closeModal() {
-    this.indentVisible = false;
-  }
-
-  submitIndent() {
-    if (this.indentForm.invalid) return;
-
-    console.log("Form Data:", this.indentForm.value);
-
-    // Continue API call...
-  }
-
-  reports = [
-  {
-    indentId: '#IND-1001',
-    total: 15,
-    purchased: 8,
-    inProgress: 4,
-    approved: 2,
-    rejected: 1,
-    status: 'In Progress'
-  },
-  {
-    indentId: '#IND-1002',
-    total: 10,
-    purchased: 10,
-    inProgress: 0,
-    approved: 0,
-    rejected: 0,
-    status: 'Completed'
-  }
-];
-
-searchIndent: string = '';
-selectedStatus: string = '';
-
-get filteredReports() {
-  return this.reports.filter(r => {
-    const matchesIndent =
-      r.indentId.toLowerCase().includes(this.searchIndent.toLowerCase());
-
-    const matchesStatus =
-      !this.selectedStatus || r.status === this.selectedStatus;
-
-    return matchesIndent && matchesStatus;
-  });
-}
-
 
 }

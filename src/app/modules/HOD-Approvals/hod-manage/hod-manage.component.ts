@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, OnInit, inject } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CoreService } from '../../../core/services/core.services';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -48,6 +48,8 @@ export class HodManageComponent {
   private commonService: commonService = inject(commonService);
   private sanitizer: DomSanitizer = inject(DomSanitizer);
   private settingService: SettingsService = inject(SettingsService);
+  private router: Router = inject(Router);
+  writeAccess: boolean = false;
 
   constructor(private fb: FormBuilder) {
 
@@ -91,6 +93,11 @@ export class HodManageComponent {
     this.userId = this.userDetail?.id
     const employeeAccess = this.settingService.moduleAccess();
     this.userAccess = employeeAccess;
+    const hodModule = this.userAccess.find(
+      (m: { moduleId: number }) => m.moduleId === 5
+    );
+    this.writeAccess = hodModule ? hodModule.canWrite === true : false;
+    console.log('HOD module write access:', this.writeAccess);
 
     this.indentDetails();
   }
@@ -119,7 +126,7 @@ export class HodManageComponent {
     window.history.back();
   }
 
-  updateAndSave() {
+  updateAndSave(id:any) {
     const element = document.getElementById('updateStatusOffcanvas');
     if (element) {
       const offcanvas = new bootstrap.Offcanvas(element);
@@ -237,29 +244,46 @@ export class HodManageComponent {
   }
 
   submitStatus(): void {
-    if (this.statusForm.invalid) {
-      this.statusForm.markAllAsTouched();
-      return;
+      if (this.statusForm.invalid) {
+        this.statusForm.markAllAsTouched();
+        return;
+      }
+  
+      const formData = {
+        status: this.statusForm.value.status,
+        comments: this.statusForm.value.comment,
+        indentId: this.Id,
+      };
+  
+      console.log('Status Submitted:', formData);
+      // Call your service to save the status
+      // this.yourService.updateStatus(formData).subscribe(...)
+  
+      this.hodService.updateIndentStatus(formData).subscribe({
+        next: (res: any) => {
+          this.coreService.displayToast({
+            type: 'success',
+            message: 'Status updated successfully.'
+          });
+  
+          // Navigate back to manager list
+          this.router.navigate(['/hod-approvals']);
+  
+          this.indentDetails();
+        },
+        error: (err: any) => {
+          this.coreService.displayToast({
+            type: 'error',
+            message: err
+          });
+        }
+      });
+      const element = document.getElementById('updateStatusOffcanvas');
+      if (element) {
+        const canvas = bootstrap.Offcanvas.getInstance(element);
+        if (canvas) canvas.hide();
+      }
     }
-
-    const formData = {
-      status: this.statusForm.value.status,
-      comment: this.statusForm.value.comment
-    };
-
-    console.log('Status Submitted:', formData);
-    // Call your service to save the status
-    // this.yourService.updateStatus(formData).subscribe(...)
-    const element = document.getElementById('updateStatusOffcanvas');
-    if (element) {
-      const canvas = bootstrap.Offcanvas.getInstance(element);
-      if (canvas) canvas.hide();
-    }
-    this.coreService.displayToast({
-      type: 'success',
-      message: 'Status updated successfully.'
-    });
-  }
 
 
   viewFile() {

@@ -9,28 +9,37 @@
     <div class="col-md-7 card shadow-sm border-0 rounded-4">
       <div class="d-flex align-items-center justify-content-between mx-0 mb-2">
 
-        <!-- Left side: back icon + indent ID + status badge -->
+        <!-- LEFT: Back + Indent ID + Status -->
         <div class="d-flex align-items-center">
           <i class="bi bi-chevron-left fs-4 me-2 cursor-pointer" (click)="back()"></i>
+
           <h5 class="fw-bold m-0">{{ indentDetailsData?.indentId }}</h5>
 
           <span class="badge ms-3 fw-semibold" [ngClass]="{
             'bg-success-subtle text-success': indentDetailsData?.status === 'Approved',
             'bg-danger-subtle text-danger': indentDetailsData?.status === 'Rejected',
-            'bg-warning-subtle text-warning': indentDetailsData?.status !== 'Approved' && indentDetailsData?.status !== 'Rejected'
+            'bg-warning-subtle text-warning':
+              indentDetailsData?.status !== 'Approved' &&
+              indentDetailsData?.status !== 'Rejected'
           }">
             ● {{ indentDetailsData?.status }}
           </span>
         </div>
 
-        <!-- Right side: button -->
-        <span *ngIf="indentDetailsData?.files" class="cursor-pointer text-light custom-btn small px-2 rounded-pill"
-          (click)="viewFile()">
-          View Files
-        </span>
+        <!-- RIGHT: Save button + View Files -->
+        <div class="d-flex align-items-center gap-2">
+          <button *ngIf="writeAccess" class="btn btn-sm custom-btn px-4" (click)="updateAndSave(indentDetailsData?.indentId)">
+            Process
+          </button>
 
+          <button *ngIf="indentDetailsData?.files" class="btn btn-sm btn-info text-white px-4"
+            (click)="viewFile()">
+            View Files
+          </button>
+        </div>
 
       </div>
+
 
       <div class=" shadow-s border-0 rounded-4">
         <div class="card-bod">
@@ -152,7 +161,7 @@
                       comment
                     </span>
                   </label>
-                  
+
                   <span class="form-control form-control-sm bg-light" style="min-height: 28px;">
                     {{ mat?.vendor || '-' }}
                   </span>
@@ -171,9 +180,9 @@
             </div>
 
             <!-- Buttons -->
-            <button class="btn btn-sm custom-btn px-4 my-2" (click)="updateAndSave(indentDetailsData?.indentId)">
+            <!-- <button class="btn btn-sm custom-btn px-4 my-2" (click)="updateAndSave(indentDetailsData?.indentId)">
               Save And Submit
-            </button>
+            </button> -->
 
           </div>
 
@@ -313,7 +322,8 @@
 
       <!-- New Quantity -->
       <label class="form-label mt-3">Your Suggestion/New</label>
-      <input type="text" formControlName="newQty" class="form-control" placeholder="Enter new quantity" numbersOnly noFirstSpace maxlength="10" />
+      <input type="text" formControlName="newQty" class="form-control" placeholder="Enter new quantity" numbersOnly
+        noFirstSpace maxlength="10" />
       <div class="text-danger small" *ngIf="quantityForm.get('newQty')?.errors && quantityForm.get('newQty')?.touched">
         <span *ngIf="quantityForm.get('newQty')?.errors?.['required']">Quantity is required.</span>
         <span *ngIf="quantityForm.get('newQty')?.errors?.['min']">Quantity must be at least 1.</span>
@@ -321,7 +331,8 @@
 
       <!-- Comment -->
       <label class="form-label mt-3">Comment</label>
-      <input type="text" formControlName="comment" class="form-control" placeholder="Add comment" noFirstSpace maxlength="500" />
+      <input type="text" formControlName="comment" class="form-control" placeholder="Add comment" noFirstSpace
+        maxlength="500" />
       <div class="text-danger small"
         *ngIf="quantityForm.get('comment')?.errors && quantityForm.get('comment')?.touched">
         <span *ngIf="quantityForm.get('comment')?.errors?.['required']">Comment is required.</span>
@@ -401,7 +412,8 @@
 
       <!-- New Vendor -->
       <label class="form-label mt-3">New Vendor</label>
-      <input type="text" formControlName="newVendor" class="form-control" placeholder="Enter new vendor name" maxlength="100" />
+      <input type="text" formControlName="newVendor" class="form-control" placeholder="Enter new vendor name"
+        maxlength="100" />
       <div class="text-danger small"
         *ngIf="vendorChangeForm.get('newVendor')?.errors && vendorChangeForm.get('newVendor')?.touched">
         <span *ngIf="vendorChangeForm.get('newVendor')?.errors?.['required']">New vendor is required.</span>
@@ -410,7 +422,7 @@
 
       <!-- Comment -->
       <label class="form-label mt-3">Comment</label>
-      <input type="text" formControlName="comment" class="form-control" placeholder="Add comment"  maxlength="500" />
+      <input type="text" formControlName="comment" class="form-control" placeholder="Add comment" maxlength="500" />
       <div class="text-danger small"
         *ngIf="vendorChangeForm.get('comment')?.errors && vendorChangeForm.get('comment')?.touched">
         <span *ngIf="vendorChangeForm.get('comment')?.errors?.['required']">Comment is required.</span>

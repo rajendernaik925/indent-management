@@ -39,4 +39,10 @@ export class hodService {
     );
   }
 
+  updateIndentStatus(payload: any): Observable<any> {
+    return this.http.post(`${hodUrls.processIndent}`, payload, { responseType: 'text' }).pipe(
+      catchError(this.handleError)
+    );
+  }
+
 }

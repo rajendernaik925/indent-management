@@ -38,6 +38,7 @@ export class EmployeeListComponent implements OnInit {
   tableKeys: string[] = [];
   pageSize = 0;
   filteredData: any[] = [];
+  selectedFiles: File[] = [];
   currentPage = 1;
   totalRecords = 0;
   totalPages = 0;
@@ -52,21 +53,23 @@ export class EmployeeListComponent implements OnInit {
   selectedStatus: string = 'all';
   showList = false;
   materialType: any[] = [];
+  statusMasterOptions: any[] = [];
   divisions: any[] = [];
   plants: any[] = [];
   materials: any[] = [];
   filteredMaterials: any[] = [];
   requestForm: FormGroup;
   maxDob: Date;
-  colorTheme = 'my-custom-datepicker';
 
   private searchSubject = new Subject<string>();
   dateError: string | null = null;
   searchError: string | null = null;
   fromDate: string | null = null;
   toDate: string | null = null;
+  selectedStatusId: number | null = null;
   searchInputValue: string = '';
   private materialSearchTimer: any;
+  writeAccess: boolean = false;
 
 
   private coreService: CoreService = inject(CoreService);
@@ -148,6 +151,11 @@ export class EmployeeListComponent implements OnInit {
     const employeeAccess = this.settingService.moduleAccess();
     this.userAccess = employeeAccess;
 
+    const employeeModule = this.userAccess.find(
+      (m: { moduleId: number }) => m.moduleId === 2
+    );
+     this.writeAccess = employeeModule ? employeeModule.canWrite === true : false;
+    console.log('Employee module write access:', this.writeAccess);
     // Auto-select single-option dropdowns
     // this.setSingleOption(this.materialType, 'materialType', 0);
     // this.setSingleOption(this.divisions, 'division', 0);
@@ -159,7 +167,8 @@ export class EmployeeListComponent implements OnInit {
       this.currentPage,
       this.searchInputValue,
       this.fromDate,
-      this.toDate
+      this.toDate,
+      this.selectedStatusId
     );
 
     this.budgetValidation();
@@ -211,7 +220,8 @@ export class EmployeeListComponent implements OnInit {
       this.currentPage,
       this.searchInputValue,
       this.fromDate,
-      this.toDate
+      this.toDate, 
+      this.selectedStatusId
     );
   }
 
@@ -220,14 +230,16 @@ export class EmployeeListComponent implements OnInit {
     pageNumber: number,
     search: string | null,
     fromDate: string | null,
-    toDate: string | null
+    toDate: string | null, 
+    selectedStatusId: number | null
   ) {
     const payload = {
       userId: this.userDetail?.id ? this.userDetail?.id : null,
       pageNumber,
       search: search,
       fromDate,
-      toDate
+      toDate, 
+      status : selectedStatusId
     };
 
     console.log('Payload to send:', payload);
@@ -247,11 +259,9 @@ export class EmployeeListComponent implements OnInit {
 
         // Get table keys and filter out 'S.NO'
         this.tableKeys = this.indentRequestList.length
-          ? Object.keys(this.indentRequestList[0]).filter(key => key !== 'S.NO')
+          ? Object.keys(this.indentRequestList[0]).filter(key => key !== 'S.NO' && key !== 'Colour Code')
           : [];
       },
-
-
       error: (err: HttpErrorResponse) => {
         console.error('API Error:', err);
       }
@@ -332,7 +342,8 @@ export class EmployeeListComponent implements OnInit {
           this.currentPage,
           this.searchInputValue,
           this.fromDate,
-          this.toDate
+          this.toDate, 
+          this.selectedStatusId
         );
       },
       error: (err) => {
@@ -508,6 +519,7 @@ export class EmployeeListComponent implements OnInit {
     this.divisionMaster();
     this.plantsMaster();
     this.materialTypesMaster();
+    this.statusMaster();
   }
 
   divisionMaster(): void {
@@ -547,8 +559,17 @@ export class EmployeeListComponent implements OnInit {
     });
   }
 
-
-  selectedFiles: File[] = [];
+  statusMaster() {
+    this.masterService.InitiatorStatusMaster().subscribe({
+      next: (res: any) => { 
+        console.log('Status Master:', res);
+        this.statusMasterOptions = res;
+      },
+      error: (err: HttpErrorResponse) => {
+        console.error('Error:', err);
+      }
+    });
+  }
 
   onFileChange(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -611,16 +632,25 @@ export class EmployeeListComponent implements OnInit {
       this.currentPage,
       this.searchInputValue,
       this.fromDate,
-      this.toDate
+      this.toDate, 
+      this.selectedStatusId
     );
   }
 
   clearFilters() {
     if ((this.fromDate && this.fromDate !== '') ||
       (this.toDate && this.toDate !== '') ||
-      (this.searchInputValue && this.searchInputValue.trim() !== '')) {
+      (this.searchInputValue && this.searchInputValue.trim() !== '') ||
+      (this.selectedStatusId !== null)
+    ) {
       window.location.reload();
     }
+  }
+
+   onStatusChange(event: Event) {
+    const status = Number((event.target as HTMLSelectElement).value);
+    this.selectedStatusId = status;
+    this.resetAndLoad();
   }
 
 

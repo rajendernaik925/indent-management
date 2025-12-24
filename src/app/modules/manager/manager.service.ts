@@ -58,8 +58,8 @@ export class managerService {
     );
   }
 
-   updateIndentStatus(payload: any): Observable<any> {
-    return this.http.post(`${managerUrls.processIndent}`, payload).pipe(
+  updateIndentStatus(payload: any): Observable<any> {
+    return this.http.post(`${managerUrls.processIndent}`, payload, { responseType: 'text' }).pipe(
       catchError(this.handleError)
     );
   }

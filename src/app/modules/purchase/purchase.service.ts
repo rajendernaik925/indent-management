@@ -46,6 +46,8 @@ export class purchaseService {
     return throwError(() => error);
   };
 
+
+
   purchaseRequestList(params: any): Observable<any> {
     return this.http.post(`${purchaseUrls.purchaseList}`, params).pipe(
       catchError(this.handleError),
@@ -53,8 +55,14 @@ export class purchaseService {
   }
 
   removeMaterial(payload: any): Observable<any> {
-      return this.http.post(`${purchaseUrls.removeMaterial}`, payload, { responseType: 'text' }).pipe(
-        catchError(this.handleError)
-      );
-    }
+    return this.http.post(`${purchaseUrls.removeMaterial}`, payload, { responseType: 'text' }).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  updateIndentStatus(payload: any): Observable<any> {
+    return this.http.post(`${purchaseUrls.processIndent}`, payload, { responseType: 'text' }).pipe(
+      catchError(this.handleError)
+    );
+  }
 }

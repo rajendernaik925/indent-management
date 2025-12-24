@@ -9,6 +9,8 @@ export const masterUrls = {
   plants: '/master/plants',
   materialTypes: '/master/material-types',
   materials: '/master/search/material',
+  InitiatorStatus: '/master/indent/filter/status',
+  status: '/master/filter/status',
 };
 
 export const employeeUrls = {
@@ -24,13 +26,15 @@ export const managerUrls = {
 }
 
 export const purchaseUrls = {
-  purchaseList: '/manager/indents',
-  removeMaterial: '/purchase/material-disable'
+  purchaseList: '/purchase/indents',
+  removeMaterial: '/purchase/material-disable',
+  processIndent: '/purchase/process-indent',
 }
 
 export const hodUrls = {
-  hodList: '/manager/indents',
-  removeMaterial: '/hod/material-disable'
+  hodList: '/hod/indents',
+  removeMaterial: '/hod/material-disable',
+  processIndent: '/hod/process-indent'
 }
 
 export const commonUrls = {

@@ -63,4 +63,14 @@ export class masterService {
         return this.http.post(`${masterUrls.materials}`, payload).pipe(
             catchError(this.handleError));
     }
+
+    InitiatorStatusMaster(): Observable<any> {
+        return this.http.get(`${masterUrls.InitiatorStatus}`).pipe(
+            catchError(this.handleError));
+    }
+
+    statusMaster(): Observable<any> {
+        return this.http.get(`${masterUrls.status}`).pipe(
+            catchError(this.handleError));
+    }
 }

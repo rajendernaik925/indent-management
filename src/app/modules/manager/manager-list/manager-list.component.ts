@@ -33,6 +33,7 @@ export class ManagerListComponent implements OnInit {
   managerRequestList: any[] = [];
   tableKeys: string[] = [];
   divisionList: any[] = [];
+  statusList: any[] = [];
   currentPage = 1;
   pageSize = 7;
   totalRecords = 0;
@@ -45,6 +46,7 @@ export class ManagerListComponent implements OnInit {
   toDate: string | null = null;
   selectedDivisionId: number | null = null;
   selectedStatusId: number | null = null;
+  writeAccess: boolean = false;
 
   private coreService: CoreService = inject(CoreService);
   private router: Router = inject(Router);
@@ -58,16 +60,16 @@ export class ManagerListComponent implements OnInit {
     this.userId = this.userDetail?.id
     const employeeAccess = this.settingService.moduleAccess();
     this.userAccess = employeeAccess;
-    // this.loadIndents();
-    this.callListAPI(
-      this.currentPage,
-      this.fromDate,
-      this.toDate,
-      this.selectedDivisionId,
-      this.selectedStatusId
+    const managerModule = this.userAccess.find(
+      (m: { moduleId: number }) => m.moduleId === 3
     );
+    this.writeAccess = managerModule ? managerModule.canWrite === true : false;
+    console.log('Purchase module write access:', this.writeAccess);
 
-    this.divisionMaster();
+    this.matserApiCalls();
+    // this.loadIndents();
+
+
   }
 
   changePage(page: number) {
@@ -144,11 +146,17 @@ export class ManagerListComponent implements OnInit {
     this.resetAndLoad();
   }
 
-   onStatusChange(event: Event) {
-    const status = Number((event.target as HTMLSelectElement).value);
-    this.selectedStatusId = status;
+  onStatusChange() {
+    if (this.selectedStatusId === null) {
+      return; // or handle default case
+    }
+
+    console.log('selected status id : ', this.selectedStatusId);
     this.resetAndLoad();
   }
+
+
+
 
 
   private resetAndLoad() {
@@ -167,15 +175,14 @@ export class ManagerListComponent implements OnInit {
     fromDate: string | null,
     toDate: string | null,
     divisionId: number | null,
-    statusId: number | null,
+    status: number | null,
   ) {
     const payload = {
-      userId: this.userDetail?.id ? this.userDetail?.id : null,
       pageNumber,
       divisionId,
       fromDate,
       toDate,
-      statusId
+      status
     };
     console.log("payload : ", payload);
 
@@ -216,6 +223,11 @@ export class ManagerListComponent implements OnInit {
     }
   }
 
+  matserApiCalls() {
+    this.divisionMaster();
+    this.statusMaster();
+  }
+
   divisionMaster() {
     this.masterService.divisionsMaster(this.userId, 'M').subscribe({
       next: (res: any) => {
@@ -227,6 +239,39 @@ export class ManagerListComponent implements OnInit {
       }
     })
   }
+
+  statusMaster() {
+    this.masterService.statusMaster().subscribe({
+      next: (res: any[]) => {
+        console.log('status master : ', res);
+        this.statusList = res || [];
+
+        const pendingStatus = this.statusList.find(
+          status => status.value?.toLowerCase() === 'pending'
+        );
+
+        this.selectedStatusId = pendingStatus?.id ?? null;
+
+        // after getting status list, call the list API with default status
+        
+        if (this.selectedStatusId !== null) {
+          this.callListAPI(
+            this.currentPage,
+            this.fromDate,
+            this.toDate,
+            this.selectedDivisionId,
+            this.selectedStatusId
+          );
+        }
+
+        console.log('default selected status id : ', this.selectedStatusId);
+      },
+      error: (err: HttpErrorResponse) => {
+        console.log('error : ', err);
+      }
+    });
+  }
+
 
 }
 

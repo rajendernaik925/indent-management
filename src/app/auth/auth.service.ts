@@ -3,7 +3,6 @@ import { inject, Injectable } from "@angular/core";
 import { authUrls } from "../api.constants";
 import { catchError, Observable, throwError } from "rxjs";
 import { CoreService } from "../core/services/core.services";
-import { IApiResponse } from "../core/modals/api-respones";
 
 @Injectable({
   providedIn: 'root'
@@ -29,7 +28,7 @@ export class AuthService {
   }
 
   Login(data: any = {}): Observable<any> {
-    return this.http.post<IApiResponse>(`${authUrls.login}`, data).pipe(
+    return this.http.post<any>(`${authUrls.login}`, data).pipe(
       catchError(this.handleError),
     );
   }

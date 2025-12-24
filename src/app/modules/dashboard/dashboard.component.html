@@ -1,4 +1,4 @@
-<div class="container-flui scroll-container mt-2">
+<div class="container-fluid scroll-container mt-2">
 
   <!-- TOP SECTION: MODULE BUTTONS -->
   <!-- <div class="d-flex justify-content-between align-items-center mb-1">
@@ -23,7 +23,7 @@
   </div> -->
 
   <!-- OVERVIEW CARDS -->
-  <div class="d-flex flex-wrap gap-3 mb-3">
+  <div class="d-flex flex-wrap gap-3 mb-2">
 
     <!-- Total Requests -->
     <div class="card green-card shadow-sm border-0 flex-fill text-center p-3">
@@ -61,149 +61,163 @@
 
 
   <!-- USER GUIDE SECTION -->
-  <div class="row">
-    <div class="col-md-6">
-      <div class="card border-0 shadow-sm p-4">
+  <div class="row g-2">
+    <div class="col-md-4">
+      <div class="card summary-card">
 
-        <h5 class="fw-bold mb-3">User Guide</h5>
+        <div class="summary-header">
+          <h5>System Summary</h5>
+        </div>
 
-        <div class="px-1">
+        <div class="accordion summary-accordion scroll-container-summary" id="summaryAccordion">
 
-          <div class="d-flex align-items-start mb-2">
-            <span class="badge bg-primary me-3 rounded-pill">1</span>
-            <div>
-              <strong>Indent Request Module</strong><br>
-              <small class="text-muted">
-                Used for raising purchase requests and tracking the approval cycle.
-              </small>
+          <!-- Dashboard -->
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#dashboard">
+                <span class="step bg-dark">01</span>
+                Dashboard
+              </button>
+            </h2>
+            <div id="dashboard" class="accordion-collapse collapse" data-bs-parent="#summaryAccordion">
+              <div class="accordion-body">
+                <ul>
+                  <li>Overall system overview and activity summary</li>
+                  <li>Total indents, approvals, and pending requests</li>
+                  <li>Visual charts for quick insights</li>
+                  <li>Navigation to different modules</li>
+                </ul>
+              </div>
             </div>
           </div>
 
-          <div class="d-flex align-items-start mb-3">
-            <span class="badge bg-success me-3 rounded-pill">2</span>
-            <div>
-              <strong>Manager Module</strong><br>
-              <small class="text-muted">
-                Allows managers to approve, reject, or review indent and PO requests.
-              </small>
+          <!-- Indent Requests -->
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#indent">
+                <span class="step bg-primary">02</span>
+                Indent Requests
+              </button>
+            </h2>
+            <div id="indent" class="accordion-collapse collapse" data-bs-parent="#summaryAccordion">
+              <div class="accordion-body">
+                <ul>
+                  <li>Raise new purchase indent requests</li>
+                  <li>Add material details, quantity, and remarks</li>
+                  <li>Submit indents for approval</li>
+                  <li>Track status of submitted indents</li>
+                </ul>
+              </div>
             </div>
           </div>
 
-          <div class="d-flex align-items-start mb-3">
-            <span class="badge bg-warning text-dark me-3 rounded-pill">3</span>
-            <div>
-              <strong>Purchase Module</strong><br>
-              <small class="text-muted">
-                Used to create purchase orders, manage vendors.
-              </small>
+          <!-- Manager Approvals -->
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#manager">
+                <span class="step bg-success">03</span>
+                Manager Approvals
+              </button>
+            </h2>
+            <div id="manager" class="accordion-collapse collapse" data-bs-parent="#summaryAccordion">
+              <div class="accordion-body">
+                <ul>
+                  <li>Review indent requests submitted by users</li>
+                  <li>Approve or reject indents with comments</li>
+                  <li>Forward approved indents to Purchase team</li>
+                  <li>View approval history</li>
+                </ul>
+              </div>
             </div>
           </div>
 
-          <div class="d-flex align-items-start">
-            <span class="badge bg-info text-dark me-3 rounded-pill">4</span>
-            <div>
-              <strong>Overview Section</strong><br>
-              <small class="text-muted">
-                Displays summarized counts like total requests.
-              </small>
+          <!-- Purchase Approvals -->
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#purchase">
+                <span class="step bg-warning text-dark">04</span>
+                Purchase Approvals
+              </button>
+            </h2>
+            <div id="purchase" class="accordion-collapse collapse" data-bs-parent="#summaryAccordion">
+              <div class="accordion-body">
+                <ul>
+                  <li>Review manager-approved indents</li>
+                  <li>Verify vendor availability and pricing</li>
+                  <li>Approve or return indents for correction</li>
+                  <li>Initiate procurement process</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- HOD Approvals -->
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#hod">
+                <span class="step bg-info text-dark">05</span>
+                HOD Approvals
+              </button>
+            </h2>
+            <div id="hod" class="accordion-collapse collapse" data-bs-parent="#summaryAccordion">
+              <div class="accordion-body">
+                <ul>
+                  <li>Final review of purchase requests</li>
+                  <li>Approve or reject high-value indents</li>
+                  <li>Ensure budget and policy compliance</li>
+                  <li>Provide final authorization</li>
+                </ul>
+              </div>
             </div>
           </div>
 
         </div>
-
       </div>
     </div>
-    <div class="col-md-6">
-      <div class="card border-0 shadow-sm p-2">
+
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm p-4">
+      <h5 class="fw-bold">Indent Summary</h5>
         <div echarts [options]="chartOption" class="chart-container">
         </div>
       </div>
-
     </div>
 
-  </div>
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm p-4">
+        <h5 class="fw-bold mb-3">Module Access</h5>
 
+        <div *ngFor="let module of modules" class="mb-2">
+          <div class="d-flex justify-content-between align-items-center p-2 rounded border" [ngClass]="{
+            'access-write': module.displayInUi && module.canWrite,
+            'access-read': module.displayInUi && !module.canWrite,
+            'access-no': !module.displayInUi
+          }">
 
-</div>
+            <span class="">{{ module.moduleName }}</span>
 
+            <span class="badge" [ngClass]="{
+              'badge-write': module.displayInUi && module.canWrite,
+              'badge-read': module.displayInUi && !module.canWrite,
+              'badge-no': !module.displayInUi
+            }">
 
+              <ng-container *ngIf="module.displayInUi; else noAccess">
+                {{ module.canWrite ? 'Full Access ✅' : 'Read Only 🔒' }}
+              </ng-container>
 
+              <ng-template #noAccess>
+                Restricted 🚫
+              </ng-template>
 
-<div class="modal" *ngIf="indentVisible">
-  <div class="modal-content p-3">
+            </span>
+          </div>
+        </div>
 
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h5 class="m-0 fw-bold text-success">New Indent Request</h5>
-      <span class="close-btn" (click)="closeModal()">&times;</span>
+      </div>
     </div>
 
-    <form [formGroup]="indentForm">
 
-      <!-- Row 1 -->
-      <div class="row">
-        <div class="col-md-3 mb-3">
-          <label class="form-label fw-semibold">Description</label>
-          <input type="text" class="form-control form-select-sm" formControlName="description"
-            placeholder="Enter description">
-        </div>
-
-        <div class="col-md-3 mb-3">
-          <label class="form-label fw-semibold">Brand</label>
-          <input type="text" class="form-control form-select-sm" formControlName="brand" placeholder="Enter brand">
-        </div>
-
-        <div class="col-md-3 mb-3">
-          <label class="form-label fw-semibold">Cost</label>
-          <input type="number" class="form-control form-select-sm" formControlName="cost" placeholder="0.00">
-        </div>
-
-        <div class="col-md-3 mb-3">
-          <label class="form-label fw-semibold">Quantity</label>
-          <input type="number" class="form-control form-select-sm" formControlName="quantity"
-            placeholder="Enter quantity">
-        </div>
-      </div>
-
-      <!-- Row 2 -->
-      <div class="row">
-        <div class="col-md-3 mb-3">
-          <label class="form-label fw-semibold">Material Code</label>
-          <input type="text" class="form-control form-select-sm" formControlName="materialCode"
-            placeholder="Enter material code">
-        </div>
-
-        <div class="col-md-3 mb-3">
-          <label class="form-label fw-semibold">Material Type</label>
-          <input type="text" class="form-control form-select-sm" formControlName="materialType"
-            placeholder="Enter material Type">
-        </div>
-
-        <div class="col-md-3 mb-3">
-          <label class="form-label fw-semibold">Plant</label>
-          <input type="text" class="form-control form-select-sm" formControlName="plant" placeholder="Enter plant">
-        </div>
-
-        <div class="col-md-3 mb-3">
-          <label class="form-label fw-semibold">Remarks</label>
-          <textarea class="form-control form-select-sm" rows="1" formControlName="remarks"
-            placeholder="Additional notes"></textarea>
-        </div>
-
-
-      </div>
-
-      <div class="mt-2 d-flex gap-3 justify-content-end">
-        <!-- <button type="button" class="btn btn-sm btn-light" (click)="closeModal()">
-          Cancel
-        </button> -->
-
-        <button type="button" class="btn custom-btn rounded btn-sm px-4" (click)="submitIndent()">
-          Submit
-        </button>
-      </div>
-
-    </form>
 
 
 

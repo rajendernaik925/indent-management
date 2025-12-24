@@ -1,15 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth.service';
-import { IApiResponse } from '../../core/modals/api-respones';
 import { HttpErrorResponse } from '@angular/common/http';
 import { CoreService } from '../../core/services/core.services';
 import { IAuthResponse } from '../../core/modals/tokent';
-import { IAdmin } from '../../core/modals/admin';
 import { SettingsService } from '../../core/services/settings.service';
-import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-login',
@@ -23,10 +20,8 @@ import Swal from 'sweetalert2';
 })
 export class LoginComponent {
 
-
   logo: string = 'images/indent-logo.png';
   sideImage: string = 'images/side-image.png';
-
 
   private router: Router = inject(Router);
   private authService: AuthService = inject(AuthService);
@@ -43,7 +38,7 @@ export class LoginComponent {
     console.log("Login value: ", this.loginForm.value);
     if (this.loginForm.valid) {
       console.log(this.loginForm.value);
-      const username = this.loginForm.value.username?.trim().toLowerCase();
+      // const username = this.loginForm.value.username?.trim().toLowerCase();
       this.authService.Login(this.loginForm.value).subscribe({
         next: (res: any) => {
           // Correct type assignment

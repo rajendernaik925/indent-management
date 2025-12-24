@@ -82,12 +82,20 @@
 
             <!-- Status -->
             <span style="font-size: 11px; font-weight: 600;">Status</span>
-            <select class="form-select form-select-sm border-0 p-0" style="font-size: 12px; height: 20px; width: 140px;"
+            <!-- <select class="form-select form-select-sm border-0 p-0" style="font-size: 12px; height: 20px; width: 140px;"
               (change)="onStatusChange($event)">
               <option value="">Select</option>
               <option value="1">Approved</option>
               <option value="2">Rejected</option>
               <option value="3">Pending</option>
+              <option *ngFor="let s of statusList" [value]="s.id">{{ s.value }}</option>
+            </select> -->
+            <select class="form-select form-select-sm border-0 p-0" style="font-size: 12px; height: 20px; width: 140px;"
+              [(ngModel)]="selectedStatusId" (ngModelChange)="onStatusChange()">
+              <option [ngValue]="null">Select</option>
+              <option *ngFor="let s of statusList" [ngValue]="s.id">
+                {{ s.value }}
+              </option>
             </select>
 
             <i class="bi bi-arrow-clockwise text-primary cursor-pointer thick-icon" (click)="clearFilters()"></i>

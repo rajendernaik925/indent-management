@@ -85,9 +85,9 @@
       <div class="d-flex align-items-center gap-3 px-3 py-1 border rounded-pill shadow-sm bg-white">
 
         <!-- Search -->
-        <div class="input-group input-group-sm" style="width: 260px;">
+        <div class="input-group input-group-sm" style="width: 220px;">
           <input #searchInput type="search" class="form-control border-0" style="font-size: 12px;"
-            placeholder="Search Indent No, Plant, Division.." (input)="onSearchChange(searchInput.value)" />
+            placeholder="Indent No, Raised By, Division.." (input)="onSearchChange(searchInput.value)" />
           <span class="input-group-text border-0 bg-transparent">
             <i class="bi bi-search" style="font-size: 13px;"></i>
           </span>
@@ -113,12 +113,20 @@
 
         <div class="vr" style="height: 26px;"></div>
 
+            <!-- Status -->
+            <span style="font-size: 11px; font-weight: 700;">Status</span>
+            <select class="form-select form-select-sm border-0 p-0" style="font-size: 12px; height: 20px; width: 150px;"
+              (change)="onStatusChange($event)">
+              <option value="">Select</option>
+              <option *ngFor="let s of statusMasterOptions" [value]="s.stage_code">{{ s.filter_status }}</option>
+            </select>
+
         <!-- Reset -->
         <i class="bi bi-arrow-clockwise text-primary cursor-pointer thick-icon" style="font-size: 14px;"
           (click)="clearFilters()" title="Reset Filters"></i>
 
         <!-- Add Button -->
-        <button class="btn btn-sm px-3 custom-btn rounded-pill shadow-none" style="font-size: 12px; font-weight: 600;"
+        <button *ngIf="writeAccess" class="btn btn-sm px-3 custom-btn rounded-pill shadow-none" style="font-size: 12px; font-weight: 600;"
           (click)="addNewRequest()">
           Add New Request
         </button>
@@ -146,7 +154,7 @@
               <tr *ngFor="let item of indentRequestList" class="cursor-pointer" (click)="manageById(item['S.NO'])">
                 <td *ngFor="let key of tableKeys"
                   style="white-space: nowrap; font-size: 10px; line-height: 0.8; text-transform: capitalize;">
-                  <ng-container *ngIf="key === 'Status'; else normalCell">
+                  <!-- <ng-container *ngIf="key === 'Status'; else normalCell">
                     <span class="badge" [ngClass]="{
                       'bg-warning-subtle text-warning': item[key] === 'Pending Manager Approval',
                       'bg-success-subtle text-success': item[key] === 'Approved',
@@ -154,7 +162,17 @@
                     }" style="font-size: 10px; text-transform: capitalize;">
                       {{ item[key] }}
                     </span>
+                  </ng-container> -->
+
+                  <ng-container *ngIf="key === 'Status'; else normalCell">
+                    <span class="badge text-white" [ngStyle]="{
+                      'background-color': item?.['Colour Code'],
+                    }" style="font-size: 10px; text-transform: capitalize;">
+                      {{ item[key] }}
+                    </span>
                   </ng-container>
+
+
 
 
                   <ng-template #normalCell>
@@ -255,7 +273,7 @@
       <!-- ===== PARENT FIELDS ===== -->
       <fieldset class="border rounded px-3 pb-3 mb-3">
         <legend class="float-none w-auto  fw-semibold custom-text fs-6">
-          Division & Budget  Details
+          Division & Budget Details
         </legend>
 
         <div class="row g-3">
@@ -316,8 +334,7 @@
       <!-- ===== CHILD MATERIALS ARRAY ===== -->
       <div formArrayName="materials">
 
-        <div class="mb-3 rounded" *ngFor="let group of materialsArray.controls; let i = index"
-          [formGroupName]="i">
+        <div class="mb-3 rounded" *ngFor="let group of materialsArray.controls; let i = index" [formGroupName]="i">
 
           <fieldset class="border rounded px-3 pb-3 mb-3">
             <legend class="float-none w-auto  fw-semibold custom-text fs-6">
